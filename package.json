@@ -1,0 +1,32 @@
+{
+  "name": "kwirk",
+  "version": "1.0.0",
+  "description": "A Puzzle Boy clone written in HTML5 and TypesScript.",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack-cli",
+    "serve": "webpack-dev-server --no-inline --open",
+    "lint": "tslint -c tslint.json 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdiemke/kwirk.git"
+  },
+  "keywords": [],
+  "author": "Johannes Diemke",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jdiemke/kwirk/issues"
+  },
+  "homepage": "https://github.com/jdiemke/kwirk#readme",
+  "dependencies": {
+    "file-loader": "2.0.0",
+    "html-webpack-plugin": "3.2.0",
+    "ts-loader": "5.2.0",
+    "tslint": "5.11.0",
+    "typescript": "3.0.3",
+    "webpack": "4.19.1",
+    "webpack-cli": "3.1.1",
+    "webpack-dev-server": "3.1.8"
+  }
+}
