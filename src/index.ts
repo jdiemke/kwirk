@@ -48,8 +48,136 @@ class CollisionMap {
 
 }
 
+interface IBlock {
+    draw(): void;
+    collides(xx: number, yy: number): boolean;
+    fill(map: CollisionMap): void;
+    handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): void;
+}
 // tslint:disable-next-line:max-classes-per-file
-class MovableTile {
+class Vector2D {
+    constructor(public x: number, public y: number) {
+
+    }
+
+    /**
+     * https://math.stackexchange.com/questions/74307/two-2d-vector-angle-clockwise-predicate
+     *
+     * @param vector
+     */
+    public determienRotationDirectionTo(vector: Vector2D): RotationDirection {
+        const cz = this.x * vector.y - this.y * vector.x;
+
+        if (cz > 0) {
+            return RotationDirection.CW;
+        } else if (cz < 0) {
+            return RotationDirection.CCW;
+        } else {
+            return RotationDirection.PARALLEL;
+        }
+    }
+}
+
+// tslint:disable-next-line:max-classes-per-file
+class RotatableBlock implements IBlock {
+
+    private circle: Array<Vector2D> = [
+        new Vector2D(-1, - 1),
+        new Vector2D(0, - 1),
+        new Vector2D(1, - 1),
+        new Vector2D(1, 0),
+        new Vector2D(1, 1),
+        new Vector2D(0, 1),
+        new Vector2D(- 1, 1),
+        new Vector2D(- 1, 0),
+    ];
+    private tiles: Array<number>;
+
+    constructor(private x: number, private y: number) {
+        this.tiles = [
+            1, 3,
+            5
+        ];
+    }
+
+    public draw(): void {
+        context.fillRect((this.x) * 16, (this.y) * 16, 16, 16);
+        for (let i = 0; i < this.tiles.length; i++) {
+            context.fillStyle = '#0000ff';
+            // tslint:disable-next-line:max-line-length
+            context.fillRect((this.circle[this.tiles[i]].x + this.x) * 16, (this.circle[this.tiles[i]].y + this.y) * 16, 16, 16);
+        }
+    }
+    public collides(xx: number, yy: number): boolean {
+        if (xx === this.x && yy === this.y) {
+            return true;
+        }
+        for (let i = 0; i < this.tiles.length; i++) {
+            if ((this.x + this.circle[this.tiles[i]].x) === xx && (this.y + this.circle[this.tiles[i]].y) === yy) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public fill(map: CollisionMap): void {
+        for (let i = 0; i < this.tiles.length; i++) {
+            map.set(this.circle[this.tiles[i]].x + this.x, this.circle[this.tiles[i]].y + this.y, true);
+        }
+    }
+
+    // tslint:disable-next-line:no-empty
+    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): void {
+        const oldDir: Vector2D = new Vector2D(oldPlayer.getX() - this.x, oldPlayer.getY() - this.y);
+        const newDir: Vector2D = new Vector2D(newPlayer.getX() - this.x, newPlayer.getY() - this.y);
+
+        const direction: RotationDirection = oldDir.determienRotationDirectionTo(newDir);
+        console.warn(RotationDirection[direction]);
+
+        if (direction === RotationDirection.PARALLEL) {
+            return;
+        }
+
+        if (direction === RotationDirection.CW) {
+            for (let i = 0; i < this.tiles.length; i++) {
+                for (let off = 1; off <= 2; off++) {
+                    // tslint:disable-next-line:max-line-length
+                    if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y)) {
+                        console.warn('crap');
+                        return;
+                    }
+                }
+            }
+            this.tiles = this.tiles.map((x: number) => (x + 2) % 8);
+        }
+
+        if (direction === RotationDirection.CCW) {
+            for (let i = 0; i < this.tiles.length; i++) {
+                for (let off = 1; off <= 2; off++) {
+                    // tslint:disable-next-line:max-line-length
+                    if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y)) {
+                        console.warn('crap');
+                        return;
+                    }
+                }
+            }
+            this.tiles = this.tiles.map((x: number) => (x + 6) % 8);
+        }
+
+        if (this.collides(newPlayer.getX(), newPlayer.getY())) {
+            const dx: number = newPlayer.getX() - oldPlayer.getX();
+            const dy: number = newPlayer.getY() - oldPlayer.getY();
+            newPlayer.setX(newPlayer.getX() + dx);
+            newPlayer.setY(newPlayer.getY() + dy);
+        }
+        player.setX(newPlayer.getX());
+        player.setY(newPlayer.getY());
+    }
+
+}
+
+// tslint:disable-next-line:max-classes-per-file
+class BushableBlock implements IBlock {
     public x: number;
     public y: number;
     private with: number;
@@ -71,7 +199,7 @@ class MovableTile {
         }
     }
 
-    public collides(xx: number, yy: number) {
+    public collides(xx: number, yy: number): boolean {
         for (let y: number = 0; y < this.height; y++) {
             for (let x: number = 0; x < this.with; x++) {
                 if ((this.x + x) === xx && (this.y + y) === yy) {
@@ -82,7 +210,7 @@ class MovableTile {
         return false;
     }
 
-    public move(xx: number, yy: number, col: CollisionMap) {
+    public isMovable(xx: number, yy: number, col: CollisionMap) {
         for (let y: number = 0; y < this.height; y++) {
             for (let x: number = 0; x < this.with; x++) {
                 if (col.get(this.x + x + xx, this.y + y + yy)) {
@@ -101,11 +229,28 @@ class MovableTile {
         }
     }
 
+    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): void {
+        // collision case: check whether obstacle can be moved according to the players movement
+        const dx: number = newPlayer.getX() - oldPlayer.getX();
+        const dy: number = newPlayer.getY() - oldPlayer.getY();
+
+        if (this.isMovable(dx, dy, map)) {
+            this.x += dx;
+            this.y += dy;
+
+            // TODO: check whether collistion has to be converted into floor tiles
+
+            player.setX(newPlayer.getX());
+            player.setY(newPlayer.getY());
+        }
+    }
+
 }
 
-const moveableObjects: Array<MovableTile> = [
-    new MovableTile(2, 2, 2, 2),
-    new MovableTile(6, 2, 1, 2)
+const moveableObjects: Array<IBlock> = [
+    new BushableBlock(2, 2, 2, 2),
+    new BushableBlock(6, 2, 1, 1),
+    new RotatableBlock(11, 2)
 ];
 
 // tslint:disable-next-line:max-classes-per-file
@@ -220,6 +365,12 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 
 });
 
+enum RotationDirection {
+    CCW,
+    CW,
+    PARALLEL
+}
+
 function move(dx: number, dy: number): void {
 
     const newPlayer: Player = new Player(player.getX() + dx, player.getY() + dy);
@@ -237,7 +388,7 @@ function move(dx: number, dy: number): void {
         return;
     }
 
-    const collistion: MovableTile = moveableObjects.find((x: MovableTile) => {
+    const collistion: IBlock = moveableObjects.find((x: IBlock) => {
         return x.collides(newPlayer.getX(), newPlayer.getY());
     });
 
@@ -248,7 +399,7 @@ function move(dx: number, dy: number): void {
         return;
     }
 
-    const other: Array<MovableTile> = moveableObjects.filter((x: MovableTile) => {
+    const other: Array<IBlock> = moveableObjects.filter((x: IBlock) => {
         return x !== collistion;
     });
 
@@ -257,14 +408,5 @@ function move(dx: number, dy: number): void {
         x.fill(colMap);
     });
 
-    // collision case: check whether obstacle can be moved according to the players movement
-    if (collistion.move(dx, dy, colMap)) {
-        collistion.x += dx;
-        collistion.y += dy;
-
-        // TODO: check whether collistion has to be converted into floor tiles
-
-        player.setX(newPlayer.getX());
-        player.setY(newPlayer.getY());
-    }
+    collistion.handleCollision(player, newPlayer, colMap);
 }
