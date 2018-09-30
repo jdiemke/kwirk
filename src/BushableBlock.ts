@@ -2,13 +2,13 @@ import { CollisionMap } from './CollisionMap';
 import { IBlock } from './IBlock';
 import { Player } from './Player';
 
-class BushableBlock implements IBlock {
+export class BushableBlock implements IBlock {
     public x: number;
     public y: number;
     private with: number;
     private height: number;
 
-    constructor(x: number, y: number, width: number, height: number) {
+    constructor(x: number, y: number, width: number, height: number, private rotImage: HTMLImageElement) {
         this.x = x;
         this.y = y;
         this.with = width;
@@ -16,12 +16,8 @@ class BushableBlock implements IBlock {
     }
 
     public draw(context): void {
-        for (let y: number = 0; y < this.height; y++) {
-            for (let x: number = 0; x < this.with; x++) {
-                context.fillStyle = '#0000ff';
-                context.fillRect(this.x * 8 + x * 8, this.y * 8 + y * 8, 8, 8);
-            }
-        }
+        context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+        context.drawImage(this.rotImage, 2 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
     }
 
     public collides(xx: number, yy: number): boolean {

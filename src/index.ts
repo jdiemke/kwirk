@@ -6,8 +6,10 @@ import tileImage from './assets/tiles.png';
 import rot from './assets/rotating.png';
 import { CollisionMap } from './CollisionMap';
 import { IBlock } from './IBlock';
+import { AbstractLevel } from './levels/AbstractLevel';
+import { Level1 } from './levels/Level1';
+import { Level2 } from './levels/Level2';
 import { Player } from './Player';
-import { RotatableBlock } from './RotateableBlock';
 
 XMPlayer.init();
 
@@ -48,41 +50,16 @@ const context: CanvasRenderingContext2D = canvas.getContext('2d');
 
 context.fillRect(0, 0, 256, 224);
 
-// height: 18
-// width: 20
-const level: Array<Array<number>> = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0],
-    [0, 3, 9, 9, 9, 4, 9, 9, 9, 9, 9, 9, 9, 9, 4, 9, 9, 9, 2, 0],
-    [0, 3, 8, 10, 8, 9, 8, 8, 8, 6, 7, 8, 8, 8, 9, 8, 8, 8, 2, 0],
-    [0, 3, 8, 11, 8, 5, 8, 8, 8, 8, 8, 8, 8, 8, 5, 8, 8, 8, 2, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
-
 const tiles: HTMLImageElement = new Image();
 tiles.src = tileImage;
 
-const rotImage: HTMLImageElement = new Image();
+export const rotImage: HTMLImageElement = new Image();
 rotImage.src = rot;
 
-const moveableObjects: Array<IBlock> = [
-    new RotatableBlock(7, 8, 2, rotImage), // use factory singleton for images
-    new RotatableBlock(12, 8, 0, rotImage)
-];
-
-const player = new Player(16, 8);
+const lev: AbstractLevel = new Level1();
+let level = lev.getLevel();
+let moveableObjects = lev.getEnities();
+let player = lev.getStartPos();
 
 function draw() {
     for (let y: number = 0; y < level.length; y++) {
@@ -152,6 +129,15 @@ function move(dx: number, dy: number): void {
     if (collistion === undefined) {
         player.setX(newPlayer.getX());
         player.setY(newPlayer.getY());
+
+        if (level[player.getY()][player.getX()] === 10) {
+            console.warn('test');
+            player.setX(18);
+            const lev2 = new Level2();
+            level = lev2.getLevel();
+            moveableObjects = lev2.getEnities();
+            player = lev.getStartPos();
+        }
         return;
     }
 
