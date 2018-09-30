@@ -1,6 +1,7 @@
 import 'jsxm/xm';
 import 'jsxm/xmeffects';
 import song from './assets/dalezy_-_tu_page.xm';
+import kwirkImage from './assets/kwirk.png';
 import tileImage from './assets/tiles.png';
 
 import rot from './assets/rotating.png';
@@ -9,6 +10,7 @@ import { IBlock } from './IBlock';
 import { AbstractLevel } from './levels/AbstractLevel';
 import { Level1 } from './levels/Level1';
 import { Level2 } from './levels/Level2';
+import { Level3 } from './levels/Level3';
 import { Player } from './Player';
 
 XMPlayer.init();
@@ -53,23 +55,35 @@ context.fillRect(0, 0, 256, 224);
 const tiles: HTMLImageElement = new Image();
 tiles.src = tileImage;
 
+const kwirk: HTMLImageElement = new Image();
+kwirk.src = kwirkImage;
+
 export const rotImage: HTMLImageElement = new Image();
 rotImage.src = rot;
-
-const lev: AbstractLevel = new Level1();
+const all = [
+    new Level1(),
+    new Level2(),
+    new Level3(),
+];
+let currentLev: number = 0;
+const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
 let player = lev.getStartPos();
 
 function draw() {
+    // tslint:disable-next-line:max-line-length
+    context.clearRect(0, 0, 20 * 8, 18 * 8);
+    context.drawImage(
+        kwirk,
+        (Math.floor(Date.now() * 0.008) % 2) * 8, 0, 8, 16, player.getX() * 8, player.getY() * 8, 8, 16);
+
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
-            context.drawImage(tiles, level[y][x] * 8, 0, 8, 8, x * 8, y * 8, 8, 8);
+            if (level[y][x] !== 8)
+                context.drawImage(tiles, level[y][x] * 8, 0, 8, 8, x * 8, y * 8, 8, 8);
         }
     }
-
-    context.fillStyle = '#ff44ff';
-    context.fillRect(player.getX() * 8, player.getY() * 8, 8, 8);
 
     moveableObjects.forEach(x => x.draw(context));
 
@@ -131,12 +145,11 @@ function move(dx: number, dy: number): void {
         player.setY(newPlayer.getY());
 
         if (level[player.getY()][player.getX()] === 10) {
-            console.warn('test');
-            player.setX(18);
-            const lev2 = new Level2();
+            currentLev = (currentLev + 1) % all.length;
+            const lev2 = all[currentLev];
             level = lev2.getLevel();
             moveableObjects = lev2.getEnities();
-            player = lev.getStartPos();
+            player = lev2.getStartPos();
         }
         return;
     }
