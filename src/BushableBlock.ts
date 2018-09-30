@@ -15,9 +15,20 @@ export class BushableBlock implements IBlock {
         this.height = height;
     }
 
+    // TODO: fix drawing code
     public draw(context): void {
-        context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
-        context.drawImage(this.rotImage, 2 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+        if (this.with === 2 && this.height === 2) {
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y + 1) * 8, 8, 8);
+        }
+
+        if (this.with === 2 && this.height === 1) {
+            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+        }
+
     }
 
     public collides(xx: number, yy: number): boolean {
