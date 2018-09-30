@@ -1,7 +1,30 @@
+import 'jsxm/xm';
+import 'jsxm/xmeffects';
+import song from './dalezy_-_tu_page.xm';
+import tileImage from './tiles.png';
+
+import rot from './rotating.png';
+
+XMPlayer.init();
+
+function playExtendedModule(filename: string) {
+    return fetch(filename)
+        .then((response: Response) => response.arrayBuffer())
+        .then((arrayBuffer: ArrayBuffer) => {
+            if (arrayBuffer) {
+                XMPlayer.load(arrayBuffer);
+                XMPlayer.play();
+            } else {
+                console.log('unable to load', filename);
+            }
+        });
+}
+
+playExtendedModule(song);
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 
-canvas.width = 356;
-canvas.height = 224;
+canvas.width = 20 * 8;
+canvas.height = 18 * 8;
 
 canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: -moz-crisp-edges;' + // FireFox
@@ -21,14 +44,34 @@ const context: CanvasRenderingContext2D = canvas.getContext('2d');
 
 context.fillRect(0, 0, 256, 224);
 
+// height: 18
+// width: 20
 const level: Array<Array<number>> = [
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0],
+    [0, 3, 9, 9, 9, 4, 9, 9, 9, 9, 9, 9, 9, 9, 4, 9, 9, 9, 2, 0],
+    [0, 3, 8, 10, 8, 9, 8, 8, 8, 6, 7, 8, 8, 8, 9, 8, 8, 8, 2, 0],
+    [0, 3, 8, 11, 8, 5, 8, 8, 8, 8, 8, 8, 8, 8, 5, 8, 8, 8, 2, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
+
+const tiles: HTMLImageElement = new Image();
+tiles.src = tileImage;
+
+const rotImage: HTMLImageElement = new Image();
+rotImage.src = rot;
 
 class CollisionMap {
 
@@ -93,20 +136,34 @@ class RotatableBlock implements IBlock {
     ];
     private tiles: Array<number>;
 
-    constructor(private x: number, private y: number) {
+    private rotation: number = 0;
+    constructor(private x: number, private y: number, rotate: number = 0) {
         this.tiles = [
-            1, 3,
+            1, 7,
             5
         ];
+
+        this.tiles = this.tiles.map((xx: number) => (xx + rotate * 2) % 8);
+        this.rotation = rotate;
     }
 
     public draw(): void {
-        context.fillRect((this.x) * 16, (this.y) * 16, 16, 16);
-        for (let i = 0; i < this.tiles.length; i++) {
-            context.fillStyle = '#0000ff';
-            // tslint:disable-next-line:max-line-length
-            context.fillRect((this.circle[this.tiles[i]].x + this.x) * 16, (this.circle[this.tiles[i]].y + this.y) * 16, 16, 16);
-        }
+        context.save();
+        context.translate(this.x * 8 + 4, this.y * 8 + 4);
+
+        // Rotate 1 degree
+        context.rotate(Math.PI / 2 * this.rotation);
+
+        // Move registration point back to the top left corner of canvas
+        context.translate(-this.x * 8 - 4, -this.y * 8 - 4);
+        context.fillStyle = '#0000ff';
+        context.drawImage(rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+        context.drawImage(rotImage, 1 * 8, 0, 8, 8, (+ this.x) * 8, (this.y - 1) * 8, 8, 8);
+        context.drawImage(rotImage, 3 * 8, 0, 8, 8, (+ this.x) * 8, (this.y + 1) * 8, 8, 8);
+        context.drawImage(rotImage, 4 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
+
+        context.restore();
     }
     public collides(xx: number, yy: number): boolean {
         if (xx === this.x && yy === this.y) {
@@ -143,12 +200,12 @@ class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y)) {
-                        console.warn('crap');
                         return;
                     }
                 }
             }
             this.tiles = this.tiles.map((x: number) => (x + 2) % 8);
+            this.rotation = (this.rotation + 1) % 4;
         }
 
         if (direction === RotationDirection.CCW) {
@@ -156,12 +213,12 @@ class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y)) {
-                        console.warn('crap');
                         return;
                     }
                 }
             }
             this.tiles = this.tiles.map((x: number) => (x + 6) % 8);
+            this.rotation = (this.rotation - 1 + 4) % 4;
         }
 
         if (this.collides(newPlayer.getX(), newPlayer.getY())) {
@@ -194,7 +251,7 @@ class BushableBlock implements IBlock {
         for (let y: number = 0; y < this.height; y++) {
             for (let x: number = 0; x < this.with; x++) {
                 context.fillStyle = '#0000ff';
-                context.fillRect(this.x * 16 + x * 16, this.y * 16 + y * 16, 16, 16);
+                context.fillRect(this.x * 8 + x * 8, this.y * 8 + y * 8, 8, 8);
             }
         }
     }
@@ -248,9 +305,8 @@ class BushableBlock implements IBlock {
 }
 
 const moveableObjects: Array<IBlock> = [
-    new BushableBlock(2, 2, 2, 2),
-    new BushableBlock(6, 2, 1, 1),
-    new RotatableBlock(11, 2)
+    new RotatableBlock(7, 8, 2),
+    new RotatableBlock(12, 8, 0)
 ];
 
 // tslint:disable-next-line:max-classes-per-file
@@ -277,7 +333,7 @@ class Player {
 
 }
 
-const player = new Player(15, 2);
+const player = new Player(16, 8);
 
 // tslint:disable-next-line:max-classes-per-file
 class Obstacle {
@@ -319,22 +375,12 @@ const obst = new Obstacle();
 function draw() {
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
-            if (level[y][x] === 1) {
-                context.fillStyle = '#ff4444';
-            } else if (level[y][x] === 0) {
-                context.fillStyle = '#44ff44';
-            } else if (level[y][x] === 2) {
-                context.fillStyle = '#4444ff';
-            } else if (level[y][x] === 3) {
-                context.fillStyle = '#0033ff';
-            }
-
-            context.fillRect(x * 16, y * 16, 16, 16);
+            context.drawImage(tiles, level[y][x] * 8, 0, 8, 8, x * 8, y * 8, 8, 8);
         }
     }
 
     context.fillStyle = '#ff44ff';
-    context.fillRect(player.getX() * 16, player.getY() * 16, 16, 16);
+    context.fillRect(player.getX() * 8, player.getY() * 8, 8, 8);
 
     //  obst.draw();
 
@@ -379,7 +425,7 @@ function move(dx: number, dy: number): void {
 
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
-            colMap.set(x, y, level[y][x] === 1);
+            colMap.set(x, y, level[y][x] !== 8 && level[y][x] !== 9);
         }
     }
 
