@@ -19,7 +19,8 @@
             "generic"
         ],
         "trailing-comma": false,
-        "no-var-requires": false
+        "no-var-requires": false,
+        "arrow-parens": false
     },
     "rulesDirectory": []
 }
