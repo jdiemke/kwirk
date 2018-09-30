@@ -80,8 +80,9 @@ function draw() {
 
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
-            if (level[y][x] !== 8)
+            if (level[y][x] !== 8) {
                 context.drawImage(tiles, level[y][x] * 8, 0, 8, 8, x * 8, y * 8, 8, 8);
+            }
         }
     }
 
