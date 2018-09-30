@@ -7,3 +7,6 @@
 [![Twitter](https://img.shields.io/twitter/url/https/github.com/jdiemke/kwirk.svg?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fjdiemke%2Fkwirk)
 
 A Puzzle Boy clone written in HTML5 and TypesScript.
+
+## Demo
+https://jdiemke.github.io/kwirk
