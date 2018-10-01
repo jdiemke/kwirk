@@ -1,8 +1,7 @@
-import { BushableBlock } from '../BushableBlock';
 import { IBlock } from '../IBlock';
 import { rotImage } from '../index';
 import { Player } from '../Player';
-import { RotatableBlock } from '../RotateableBlock';
+import { PushableBlock } from '../PushableBlock';
 import { RotatableBlock3 } from '../RotateableBlock3';
 import { AbstractLevel } from './AbstractLevel';
 
@@ -35,7 +34,7 @@ export class Level5 extends AbstractLevel {
     public getEnities(): Array<IBlock> {
 
         const moveableObjects: Array<IBlock> = [
-            new BushableBlock(10, 8, 1, 1, rotImage),
+            new PushableBlock(10, 8, 1, 1, rotImage),
             new RotatableBlock3(9, 8, 0, rotImage)
         ];
         return moveableObjects;
