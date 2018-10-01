@@ -2,7 +2,7 @@ import { CollisionMap } from './CollisionMap';
 import { IBlock } from './IBlock';
 import { Player } from './Player';
 
-export class BushableBlock implements IBlock {
+export class PushableBlock implements IBlock {
     public x: number;
     public y: number;
     private with: number;
