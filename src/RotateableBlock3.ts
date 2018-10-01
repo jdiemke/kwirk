@@ -4,7 +4,7 @@ import { Player } from './Player';
 import { RotationDirection } from './RotationDirection';
 import { Vector2D } from './Vector2D';
 
-export class RotatableBlock2 implements IBlock {
+export class RotatableBlock3 implements IBlock {
 
     private circle: Array<Vector2D> = [
         new Vector2D(-1, - 1),
@@ -22,7 +22,7 @@ export class RotatableBlock2 implements IBlock {
 
     constructor(private x: number, private y: number, rotate: number = 0, private rotImage: HTMLImageElement) {
         this.tiles = [
-            1, 3
+            1, 5
         ];
 
         this.tiles = this.tiles.map((xx: number) => (xx + rotate * 2) % 8);
@@ -36,9 +36,9 @@ export class RotatableBlock2 implements IBlock {
         context.rotate(Math.PI / 2 * this.rotation);
         context.translate(-this.x * 8 - 4, -this.y * 8 - 4);
 
-        context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+        context.drawImage(this.rotImage, 15 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
         context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-        context.drawImage(this.rotImage, 2 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+        context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
 
         context.restore();
     }
@@ -55,6 +55,7 @@ export class RotatableBlock2 implements IBlock {
     }
 
     public fill(map: CollisionMap): void {
+        map.set(this.x, this.y, 1);
         for (let i = 0; i < this.tiles.length; i++) {
             map.set(this.circle[this.tiles[i]].x + this.x, this.circle[this.tiles[i]].y + this.y, 1);
         }

@@ -11,6 +11,8 @@ import { AbstractLevel } from './levels/AbstractLevel';
 import { Level1 } from './levels/Level1';
 import { Level2 } from './levels/Level2';
 import { Level3 } from './levels/Level3';
+import { Level4 } from './levels/Level4';
+import { Level5 } from './levels/Level5';
 import { Player } from './Player';
 
 XMPlayer.init();
@@ -60,10 +62,13 @@ kwirk.src = kwirkImage;
 
 export const rotImage: HTMLImageElement = new Image();
 rotImage.src = rot;
-const all = [
+
+const all: Array<AbstractLevel> = [
     new Level1(),
     new Level2(),
     new Level3(),
+    new Level4(),
+    new Level5()
 ];
 let currentLev: number = 0;
 const lev: AbstractLevel = all[currentLev];
@@ -72,11 +77,10 @@ let moveableObjects = lev.getEnities();
 let player = lev.getStartPos();
 
 function draw() {
-    // tslint:disable-next-line:max-line-length
     context.clearRect(0, 0, 20 * 8, 18 * 8);
     context.drawImage(
         kwirk,
-        (Math.floor(Date.now() * 0.008) % 2) * 8, 0, 8, 16, player.getX() * 8, player.getY() * 8, 8, 16);
+        (Math.floor(Date.now() * 0.008) % 2) * 8, 0, 8, 16, player.getX() * 8, player.getY() * 8 - 3, 8, 16);
 
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
@@ -127,11 +131,18 @@ function move(dx: number, dy: number): void {
 
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
-            colMap.set(x, y, level[y][x] !== 8 && level[y][x] !== 9 && level[y][x] !== 10 && level[y][x] !== 11);
+            colMap.set(x, y, 0);
+            if (level[y][x] !== 8 && level[y][x] !== 9 && level[y][x] !== 10 && level[y][x] !== 11) {
+                colMap.set(x, y, 1);
+            }
+
+            if (level[y][x] === 12) {
+                colMap.set(x, y, 2);
+            }
         }
     }
 
-    if (colMap.get(newPlayer.getX(), newPlayer.getY())) {
+    if (colMap.get(newPlayer.getX(), newPlayer.getY()) > 0) {
         // if the potential position is not walkable return
         return;
     }
@@ -164,6 +175,10 @@ function move(dx: number, dy: number): void {
         x.fill(colMap);
     });
 
-    collistion.handleCollision(player, newPlayer, colMap);
+    const kill: boolean = collistion.handleCollision(player, newPlayer, colMap, level);
+
+    if (kill) {
+        moveableObjects = other;
+    }
 
 }
