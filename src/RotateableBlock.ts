@@ -58,12 +58,12 @@ export class RotatableBlock implements IBlock {
 
     public fill(map: CollisionMap): void {
         for (let i = 0; i < this.tiles.length; i++) {
-            map.set(this.circle[this.tiles[i]].x + this.x, this.circle[this.tiles[i]].y + this.y, true);
+            map.set(this.circle[this.tiles[i]].x + this.x, this.circle[this.tiles[i]].y + this.y, 1);
         }
     }
 
     // tslint:disable-next-line:no-empty
-    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): void {
+    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): boolean {
         const oldDir: Vector2D = new Vector2D(oldPlayer.getX() - this.x, oldPlayer.getY() - this.y);
         const newDir: Vector2D = new Vector2D(newPlayer.getX() - this.x, newPlayer.getY() - this.y);
 
@@ -108,6 +108,8 @@ export class RotatableBlock implements IBlock {
         }
         oldPlayer.setX(newPlayer.getX());
         oldPlayer.setY(newPlayer.getY());
+
+        return false;
     }
 
 }
