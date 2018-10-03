@@ -1,6 +1,8 @@
 import { CollisionMap } from './CollisionMap';
 import { IBlock } from './IBlock';
+import { Sound } from './index';
 import { Player } from './Player';
+import { SoundEngine } from './SoundEngine';
 
 export class PushableBlock implements IBlock {
     public x: number;
@@ -108,6 +110,7 @@ export class PushableBlock implements IBlock {
         this.oldX = this.x;
         this.oldY = this.y;
         if (this.isMovable(dx, dy, map)) {
+            SoundEngine.getInstance().play(Sound.PUSH);
             this.oldX = this.x;
             this.oldY = this.y;
             this.x += dx;
@@ -122,12 +125,15 @@ export class PushableBlock implements IBlock {
                 }
                 oldPlayer.setX(newPlayer.getX());
                 oldPlayer.setY(newPlayer.getY());
+                SoundEngine.getInstance().play(Sound.FILL);
                 return true;
             }
 
             oldPlayer.setX(newPlayer.getX());
             oldPlayer.setY(newPlayer.getY());
             return false;
+        } else {
+            SoundEngine.getInstance().play(Sound.BUMP);
         }
     }
 

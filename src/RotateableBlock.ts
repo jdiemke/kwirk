@@ -4,7 +4,9 @@ import { Player } from './Player';
 import { RotationDirection } from './RotationDirection';
 import { Vector2D } from './Vector2D';
 
-// TODO: one class for all rotatables!
+import { Sound } from './index';
+import { SoundEngine } from './SoundEngine';
+
 export class RotatableBlock implements IBlock {
 
     private circle: Array<Vector2D> = [
@@ -17,6 +19,7 @@ export class RotatableBlock implements IBlock {
     private rotation: number = 0;
     private oldRotation: number = 0;
     private time: number = 0;
+    private soundEngine: SoundEngine = SoundEngine.getInstance();
 
     constructor(private x: number, private y: number, rotate: number = 0, private rotImage: HTMLImageElement) {
         this.tiles = [
@@ -85,6 +88,7 @@ export class RotatableBlock implements IBlock {
 
         if (direction === RotationDirection.PARALLEL) {
             this.oldRotation = this.rotation;
+            SoundEngine.getInstance().play(Sound.BUMP);
             return;
         }
 
@@ -93,6 +97,7 @@ export class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y)) {
+                        SoundEngine.getInstance().play(Sound.BUMP);
                         return;
                     }
                 }
@@ -108,6 +113,7 @@ export class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y)) {
+                        SoundEngine.getInstance().play(Sound.BUMP);
                         return;
                     }
                 }
@@ -127,6 +133,7 @@ export class RotatableBlock implements IBlock {
         oldPlayer.setX(newPlayer.getX());
         oldPlayer.setY(newPlayer.getY());
 
+        SoundEngine.getInstance().play(Sound.FLIP);
         return false;
     }
 

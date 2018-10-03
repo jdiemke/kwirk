@@ -1,5 +1,4 @@
-import 'jsxm/xm';
-import 'jsxm/xmeffects';
+
 // import song from './assets/dalezy_-_tu_page.xm';
 import song from './assets/keith303_-_tang.xm';
 
@@ -17,22 +16,31 @@ import { Level4 } from './levels/Level4';
 import { Level5 } from './levels/Level5';
 import { Player } from './Player';
 
-XMPlayer.init();
+import { SoundEngine } from './SoundEngine';
 
-function playExtendedModule(filename: string) {
-    return fetch(filename)
-        .then((response: Response) => response.arrayBuffer())
-        .then((arrayBuffer: ArrayBuffer) => {
-            if (arrayBuffer) {
-                XMPlayer.load(arrayBuffer);
-                XMPlayer.play();
-            } else {
-                console.log('unable to load', filename);
-            }
-        });
+import bumpSound from './assets/sounds/bump.wav';
+import fillSound from './assets/sounds/fill.wav';
+import flipSound from './assets/sounds/flip.wav';
+import initSound from './assets/sounds/init.wav';
+import pushSound from './assets/sounds/push.wav';
+
+const soundEngine = SoundEngine.getInstance();
+soundEngine.playExtendedModule(song);
+
+export enum Sound {
+    PUSH = 'push',
+    BUMP = 'bump',
+    FLIP = 'flip',
+    FILL = 'fill',
+    INIT = 'goal'
 }
 
-playExtendedModule(song);
+soundEngine.loadSound(Sound.PUSH, pushSound);
+soundEngine.loadSound(Sound.BUMP, bumpSound);
+soundEngine.loadSound(Sound.FLIP, flipSound);
+soundEngine.loadSound(Sound.FILL, fillSound);
+soundEngine.loadSound(Sound.INIT, initSound);
+
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 
 canvas.width = 20 * 8;
@@ -128,6 +136,16 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         move(0, 1);
     }
 
+    if (event.key === 'r') {
+        lastTime = Date.now();
+        oldPlayer = new Player(player.getX(), player.getY());
+        const lev2 = all[currentLev];
+        level = lev2.getLevel();
+        moveableObjects = lev2.getEnities();
+        player = lev2.getStartPos();
+        SoundEngine.getInstance().play(Sound.INIT);
+    }
+
 });
 
 let lastTime = 0;
@@ -153,6 +171,7 @@ function move(dx: number, dy: number): void {
 
     if (colMap.get(newPlayer.getX(), newPlayer.getY()) > 0) {
         // if the potential position is not walkable return
+        SoundEngine.getInstance().play(Sound.BUMP);
         return;
     }
 
@@ -171,6 +190,7 @@ function move(dx: number, dy: number): void {
             level = lev2.getLevel();
             moveableObjects = lev2.getEnities();
             player = lev2.getStartPos();
+            SoundEngine.getInstance().play(Sound.INIT);
         }
         return;
     }
