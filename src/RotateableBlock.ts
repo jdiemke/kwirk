@@ -4,21 +4,19 @@ import { Player } from './Player';
 import { RotationDirection } from './RotationDirection';
 import { Vector2D } from './Vector2D';
 
+// TODO: one class for all rotatables!
 export class RotatableBlock implements IBlock {
 
     private circle: Array<Vector2D> = [
-        new Vector2D(-1, - 1),
-        new Vector2D(0, - 1),
-        new Vector2D(1, - 1),
-        new Vector2D(1, 0),
-        new Vector2D(1, 1),
-        new Vector2D(0, 1),
-        new Vector2D(- 1, 1),
-        new Vector2D(- 1, 0),
+        new Vector2D(-1, -1), new Vector2D(+0, -1), new Vector2D(+1, -1), new Vector2D(+1, +0),
+        new Vector2D(+1, +1), new Vector2D(+0, +1), new Vector2D(-1, +1), new Vector2D(-1, +0)
     ];
+
     private tiles: Array<number>;
 
     private rotation: number = 0;
+    private oldRotation: number = 0;
+    private time: number = 0;
 
     constructor(private x: number, private y: number, rotate: number = 0, private rotImage: HTMLImageElement) {
         this.tiles = [
@@ -28,13 +26,26 @@ export class RotatableBlock implements IBlock {
 
         this.tiles = this.tiles.map((xx: number) => (xx + rotate * 2) % 8);
         this.rotation = rotate;
+        this.oldRotation = this.rotation;
+    }
+    public inter(a, b, val): number {
+        if (val < 0) {
+            return a;
+        }
+
+        if (val > 1) {
+            return b;
+        }
+
+        return (b - a) * val + a;
     }
 
-    public draw(context: CanvasRenderingContext2D): void {
+    public draw(context: CanvasRenderingContext2D, d: number): void {
         context.save();
 
         context.translate(this.x * 8 + 4, this.y * 8 + 4);
-        context.rotate(Math.PI / 2 * this.rotation);
+        const k: number = Math.max(0, Math.min((Date.now() - this.time) * 0.006, 1));
+        context.rotate(Math.PI / 2 * this.inter(this.oldRotation, this.rotation, k));
         context.translate(-this.x * 8 - 4, -this.y * 8 - 4);
 
         context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
@@ -63,7 +74,9 @@ export class RotatableBlock implements IBlock {
     }
 
     // tslint:disable-next-line:no-empty
-    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap): boolean {
+    public handleCollision(oldPlayer: Player, newPlayer: Player, map: CollisionMap,
+                           level: Array<Array<number>>, time: number): boolean {
+        this.time = time;
         const oldDir: Vector2D = new Vector2D(oldPlayer.getX() - this.x, oldPlayer.getY() - this.y);
         const newDir: Vector2D = new Vector2D(newPlayer.getX() - this.x, newPlayer.getY() - this.y);
 
@@ -71,6 +84,7 @@ export class RotatableBlock implements IBlock {
         console.warn(RotationDirection[direction]);
 
         if (direction === RotationDirection.PARALLEL) {
+            this.oldRotation = this.rotation;
             return;
         }
 
@@ -84,7 +98,9 @@ export class RotatableBlock implements IBlock {
                 }
             }
             this.tiles = this.tiles.map((x: number) => (x + 2) % 8);
+
             this.rotation = (this.rotation + 1) % 4;
+            this.oldRotation = this.rotation - 1;
         }
 
         if (direction === RotationDirection.CCW) {
@@ -97,7 +113,9 @@ export class RotatableBlock implements IBlock {
                 }
             }
             this.tiles = this.tiles.map((x: number) => (x + 6) % 8);
+
             this.rotation = (this.rotation - 1 + 4) % 4;
+            this.oldRotation = this.rotation + 1;
         }
 
         if (this.collides(newPlayer.getX(), newPlayer.getY())) {

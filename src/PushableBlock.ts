@@ -8,38 +8,60 @@ export class PushableBlock implements IBlock {
     private with: number;
     private height: number;
 
+    private time: number = 0;
+    private oldX: number;
+    private oldY: number;
+
     constructor(x: number, y: number, width: number, height: number, private rotImage: HTMLImageElement) {
         this.x = x;
         this.y = y;
+        this.oldX = x;
+        this.oldY = y;
         this.with = width;
         this.height = height;
     }
 
+    public inter(a, b, val): number {
+        if (val < 0) {
+            return a;
+        }
+
+        if (val > 1) {
+            return b;
+        }
+
+        return (b - a) * val + a;
+    }
+
     // TODO: fix drawing code
     public draw(context): void {
+        const k: number = Math.max(0, Math.min((Date.now() - this.time) * 0.006, 1));
+        const x: number =  this.inter(this.oldX, this.x, k);
+        const y: number =  this.inter(this.oldY, this.y, k);
+
         if (this.with === 1 && this.height === 1) {
-            context.drawImage(this.rotImage, 14 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 14 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
 
         }
         if (this.with === 2 && this.height === 2) {
-            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
         }
 
         if (this.with === 2 && this.height === 3) {
-            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 13 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (this.x) * 8, (this.y + 2) * 8, 8, 8);
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y + 2) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 13 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (x) * 8, (y + 2) * 8, 8, 8);
+            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x + 1) * 8, (y + 2) * 8, 8, 8);
         }
 
         if (this.with === 2 && this.height === 1) {
-            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
         }
 
     }
@@ -75,12 +97,19 @@ export class PushableBlock implements IBlock {
     }
 
     public handleCollision(oldPlayer: Player,
-                           newPlayer: Player, map: CollisionMap, level: Array<Array<number>>): boolean {
+                           newPlayer: Player, map: CollisionMap, level: Array<Array<number>>,
+                           time: number): boolean {
+
+        this.time = time;
         // collision case: check whether obstacle can be moved according to the players movement
         const dx: number = newPlayer.getX() - oldPlayer.getX();
         const dy: number = newPlayer.getY() - oldPlayer.getY();
 
+        this.oldX = this.x;
+        this.oldY = this.y;
         if (this.isMovable(dx, dy, map)) {
+            this.oldX = this.x;
+            this.oldY = this.y;
             this.x += dx;
             this.y += dy;
 

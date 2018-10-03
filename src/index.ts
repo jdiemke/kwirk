@@ -1,6 +1,8 @@
 import 'jsxm/xm';
 import 'jsxm/xmeffects';
-import song from './assets/dalezy_-_tu_page.xm';
+// import song from './assets/dalezy_-_tu_page.xm';
+import song from './assets/keith303_-_tang.xm';
+
 import kwirkImage from './assets/kwirk.png';
 import tileImage from './assets/tiles.png';
 
@@ -45,8 +47,8 @@ canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: pixelated; ' + // Future browsers
     '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-canvas.style.width = `${canvas.width * 4}px`;
-canvas.style.height = `${canvas.height * 4}px`;
+canvas.style.width = `${canvas.width * 2}px`;
+canvas.style.height = `${canvas.height * 2}px`;
 
 document.body.appendChild(canvas);
 
@@ -75,12 +77,10 @@ const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
 let player = lev.getStartPos();
+let oldPlayer: Player = lev.getStartPos();
 
 function draw() {
     context.clearRect(0, 0, 20 * 8, 18 * 8);
-    context.drawImage(
-        kwirk,
-        (Math.floor(Date.now() * 0.008) % 2) * 8, 0, 8, 16, player.getX() * 8, player.getY() * 8 - 3, 8, 16);
 
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
@@ -90,7 +90,14 @@ function draw() {
         }
     }
 
-    moveableObjects.forEach(x => x.draw(context));
+    moveableObjects.forEach(x => x.draw(context, (Date.now() - lastTime) * 0.006));
+
+    const myPl: Player = oldPlayer.interpolate(player, (Date.now() - lastTime) * 0.006);
+    context.drawImage(
+        kwirk,
+        (Math.floor(Date.now() * 0.008) % 2) * 8,
+        0, 8, 16,
+        Math.floor(myPl.getX() * 8), Math.floor(myPl.getY() * 8 - 3), 8, 16);
 
     context.font = '18px Arial';
 
@@ -123,8 +130,10 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 
 });
 
+let lastTime = 0;
 function move(dx: number, dy: number): void {
-
+    lastTime = Date.now();
+    oldPlayer = new Player(player.getX(), player.getY());
     const newPlayer: Player = new Player(player.getX() + dx, player.getY() + dy);
 
     const colMap: CollisionMap = new CollisionMap(level[0].length, level.length);
@@ -175,7 +184,7 @@ function move(dx: number, dy: number): void {
         x.fill(colMap);
     });
 
-    const kill: boolean = collistion.handleCollision(player, newPlayer, colMap, level);
+    const kill: boolean = collistion.handleCollision(player, newPlayer, colMap, level,  lastTime);
 
     if (kill) {
         moveableObjects = other;
