@@ -39,7 +39,7 @@ export class Level3 extends AbstractLevel {
     }
 
     public getStartPos(): Player {
-        return new Player(15, 7);
+        return new Player(14, 7);
     }
 
 }
