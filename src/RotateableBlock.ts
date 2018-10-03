@@ -7,6 +7,14 @@ import { Vector2D } from './Vector2D';
 import { Sound } from './index';
 import { SoundEngine } from './SoundEngine';
 
+enum RotateableBlockType {
+    SINGLE,
+    DOUBLE_ORTHOGONAL,
+    TRIPLE,
+    QUADRUPLE,
+    DOUBLE_PARALLEL
+}
+
 export class RotatableBlock implements IBlock {
 
     private circle: Array<Vector2D> = [
@@ -22,10 +30,7 @@ export class RotatableBlock implements IBlock {
     private soundEngine: SoundEngine = SoundEngine.getInstance();
 
     constructor(private x: number, private y: number, rotate: number = 0, private rotImage: HTMLImageElement) {
-        this.tiles = [
-            1, 7,
-            5
-        ];
+        this.tiles = [1, 7, 5];
 
         this.tiles = this.tiles.map((xx: number) => (xx + rotate * 2) % 8);
         this.rotation = rotate;
