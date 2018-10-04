@@ -1,19 +1,12 @@
-import { CollisionMap } from './CollisionMap';
+import { CollisionMap } from '../CollisionMap';
+import { Player } from '../Player';
+import { Vector2D } from '../Vector2D';
 import { IBlock } from './IBlock';
-import { Player } from './Player';
 import { RotationDirection } from './RotationDirection';
-import { Vector2D } from './Vector2D';
 
-import { Sound } from './index';
-import { SoundEngine } from './SoundEngine';
-
-enum RotateableBlockType {
-    SINGLE,
-    DOUBLE_ORTHOGONAL,
-    TRIPLE,
-    QUADRUPLE,
-    DOUBLE_PARALLEL
-}
+import { Sound } from '../index';
+import { SoundEngine } from '../SoundEngine';
+import { RotateableBlockType } from './RotateableBlockType';
 
 export class RotatableBlock implements IBlock {
 
@@ -27,15 +20,16 @@ export class RotatableBlock implements IBlock {
     private rotation: number = 0;
     private oldRotation: number = 0;
     private time: number = 0;
-    private soundEngine: SoundEngine = SoundEngine.getInstance();
+    private blockType: RotateableBlockType;
 
-    constructor(private x: number, private y: number, rotate: number = 0, private rotImage: HTMLImageElement) {
-        this.tiles = [1, 7, 5];
-
-        this.tiles = this.tiles.map((xx: number) => (xx + rotate * 2) % 8);
+    constructor(private x: number, private y: number, rotate: number = 0,
+                private rotImage: HTMLImageElement, type: RotateableBlockType) {
+        this.blockType = type;
+        this.tiles = this.getTiles(type).map((xx: number) => (xx + rotate * 2) % 8);
         this.rotation = rotate;
         this.oldRotation = this.rotation;
     }
+
     public inter(a, b, val): number {
         if (val < 0) {
             return a;
@@ -56,10 +50,42 @@ export class RotatableBlock implements IBlock {
         context.rotate(Math.PI / 2 * this.inter(this.oldRotation, this.rotation, k));
         context.translate(-this.x * 8 - 4, -this.y * 8 - 4);
 
-        context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
-        context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-        context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-        context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
+        if (this.blockType === RotateableBlockType.SINGLE) {
+            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+        }
+
+        if (this.blockType === RotateableBlockType.DOUBLE_ORTHOGONAL) {
+            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+        }
+
+        if (this.blockType === RotateableBlockType.TRIPLE) {
+            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+        }
+
+        if (this.blockType === RotateableBlockType.QUADRUPLE) {
+            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
+        }
+
+        if (this.blockType === RotateableBlockType.DOUBLE_PARALLEL) {
+            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+        }
 
         context.restore();
     }
@@ -140,6 +166,21 @@ export class RotatableBlock implements IBlock {
 
         SoundEngine.getInstance().play(Sound.FLIP);
         return false;
+    }
+
+    private getTiles(type: RotateableBlockType): Array<number> {
+        switch (type) {
+            case RotateableBlockType.SINGLE:
+                return [1];
+            case RotateableBlockType.DOUBLE_ORTHOGONAL:
+                return [1, 3];
+            case RotateableBlockType.TRIPLE:
+                return [1, 3, 5];
+            case RotateableBlockType.QUADRUPLE:
+                return [1, 3, 5, 7];
+            case RotateableBlockType.DOUBLE_PARALLEL:
+                return [1, 5];
+        }
     }
 
 }

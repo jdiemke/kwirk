@@ -6,8 +6,8 @@ import kwirkImage from './assets/kwirk.png';
 import tileImage from './assets/tiles.png';
 
 import rot from './assets/rotating.png';
+import { IBlock } from './blocks/IBlock';
 import { CollisionMap } from './CollisionMap';
-import { IBlock } from './IBlock';
 import { AbstractLevel } from './levels/AbstractLevel';
 import { Level1 } from './levels/Level1';
 import { Level2 } from './levels/Level2';
