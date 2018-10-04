@@ -1,4 +1,4 @@
-import { IBlock } from '../IBlock';
+import { IBlock } from '../blocks/IBlock';
 import { Player } from '../Player';
 
 export abstract class AbstractLevel {
