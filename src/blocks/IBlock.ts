@@ -1,5 +1,5 @@
-import { CollisionMap } from './CollisionMap';
-import { Player } from './Player';
+import { CollisionMap } from '../CollisionMap';
+import { Player } from '../Player';
 
 export interface IBlock {
     draw(context: CanvasRenderingContext2D, time: number): void;

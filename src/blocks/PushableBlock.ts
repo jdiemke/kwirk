@@ -1,8 +1,8 @@
-import { CollisionMap } from './CollisionMap';
+import { CollisionMap } from '../CollisionMap';
+import { Sound } from '../index';
+import { Player } from '../Player';
+import { SoundEngine } from '../SoundEngine';
 import { IBlock } from './IBlock';
-import { Sound } from './index';
-import { Player } from './Player';
-import { SoundEngine } from './SoundEngine';
 
 export class PushableBlock implements IBlock {
     public x: number;

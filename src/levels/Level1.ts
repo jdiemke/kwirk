@@ -1,7 +1,8 @@
-import { IBlock } from '../IBlock';
+import { IBlock } from '../blocks/IBlock';
+import { RotatableBlock } from '../blocks/RotateableBlock';
+import { RotateableBlockType } from '../blocks/RotateableBlockType';
 import { rotImage } from '../index';
 import { Player } from '../Player';
-import { RotatableBlock } from '../RotateableBlock';
 import { AbstractLevel } from './AbstractLevel';
 
 export class Level1 extends AbstractLevel {
@@ -33,8 +34,8 @@ export class Level1 extends AbstractLevel {
     public getEnities(): Array<IBlock> {
 
         const moveableObjects: Array<IBlock> = [
-            new RotatableBlock(7, 8, 2, rotImage), // use factory singleton for images
-            new RotatableBlock(12, 8, 0, rotImage)
+            new RotatableBlock(7, 8, 0, rotImage, RotateableBlockType.TRIPLE), // use factory singleton for images
+            new RotatableBlock(12, 8, 2, rotImage, RotateableBlockType.TRIPLE)
         ];
         return moveableObjects;
     }

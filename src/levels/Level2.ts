@@ -1,7 +1,7 @@
-import { IBlock } from '../IBlock';
+import { IBlock } from '../blocks/IBlock';
+import { PushableBlock } from '../blocks/PushableBlock';
 import { rotImage } from '../index';
 import { Player } from '../Player';
-import { PushableBlock } from '../PushableBlock';
 import { AbstractLevel } from './AbstractLevel';
 
 export class Level2 extends AbstractLevel {
