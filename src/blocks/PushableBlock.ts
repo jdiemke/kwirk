@@ -42,28 +42,28 @@ export class PushableBlock implements IBlock {
         const y: number =  this.inter(this.oldY, this.y, k);
 
         if (this.with === 1 && this.height === 1) {
-            context.drawImage(this.rotImage, 14 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 17 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
 
         }
         if (this.with === 2 && this.height === 2) {
-            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
         }
 
         if (this.with === 2 && this.height === 3) {
-            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 13 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (x) * 8, (y + 2) * 8, 8, 8);
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x + 1) * 8, (y + 2) * 8, 8, 8);
+            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 15 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 16 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x) * 8, (y + 2) * 8, 8, 8);
+            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x + 1) * 8, (y + 2) * 8, 8, 8);
         }
 
         if (this.with === 2 && this.height === 1) {
-            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 13 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 14 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
         }
 
     }
