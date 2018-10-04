@@ -53,38 +53,38 @@ export class RotatableBlock implements IBlock {
         if (this.blockType === RotateableBlockType.SINGLE) {
             context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
-            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
         }
 
         if (this.blockType === RotateableBlockType.DOUBLE_ORTHOGONAL) {
-            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
-            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
         }
 
         if (this.blockType === RotateableBlockType.TRIPLE) {
-            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 2 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
-            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
         }
 
         if (this.blockType === RotateableBlockType.QUADRUPLE) {
-            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
-            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
         }
 
         if (this.blockType === RotateableBlockType.DOUBLE_PARALLEL) {
-            context.drawImage(this.rotImage, 0 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 4 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
-            context.drawImage(this.rotImage, 1 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
         }
 
         context.restore();
