@@ -1,5 +1,6 @@
 export class Player {
 
+    public switchTime: number;
     public finished: boolean = false;
     private oldX: number;
     private oldY: number;
@@ -13,11 +14,18 @@ export class Player {
         const myPl: Player = this.interpolate(
             new Player(this.oldX, this.oldY),
             this, (Date.now() - lastTime) * 0.006);
+
+        if (this.switchTime && (this.switchTime + 600) > Date.now()) {
+            const flicker: number = Math.floor((Date.now() - this.switchTime) * 0.008) % 2;
+            context.globalAlpha = 0.75 * flicker;
+        }
+
         context.drawImage(
             kwirk,
             (Math.floor(Date.now() * 0.008) % 2) * 8,
             0, 8, 16,
             Math.floor(myPl.getX() * 8), Math.floor(myPl.getY() * 8 - 3), 8, 16);
+        context.globalAlpha = 1;
     }
 
     public interpolate(oldPlayer: Player, player: Player, time: number): Player {

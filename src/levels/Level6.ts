@@ -1,7 +1,5 @@
 import { IBlock } from '../blocks/IBlock';
 import { PushableBlock } from '../blocks/PushableBlock';
-import { RotatableBlock } from '../blocks/RotateableBlock';
-import { RotateableBlockType } from '../blocks/RotateableBlockType';
 import { rotImage } from '../index';
 import { Player } from '../Player';
 import { AbstractLevel } from './AbstractLevel';

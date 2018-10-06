@@ -28,9 +28,13 @@ import bumpSound from './assets/sounds/bump.wav';
 import fillSound from './assets/sounds/fill.wav';
 import flipSound from './assets/sounds/flip.wav';
 import initSound from './assets/sounds/init.wav';
+import nextLevelSound from './assets/sounds/next.wav';
 import pushSound from './assets/sounds/push.wav';
+import switchSound from './assets/sounds/switch.wav';
+
 import { Level6 } from './levels/Level6';
 import { Level7 } from './levels/Level7';
+import { Level8 } from './levels/Level8';
 
 const soundEngine = SoundEngine.getInstance();
 soundEngine.playExtendedModule(song);
@@ -40,14 +44,18 @@ export enum Sound {
     BUMP = 'bump',
     FLIP = 'flip',
     FILL = 'fill',
-    INIT = 'goal'
+    RESET = 'reset',
+    SWITCH = 'switch',
+    NEXT_LEVEL = 'next'
 }
 
 soundEngine.loadSound(Sound.PUSH, pushSound);
 soundEngine.loadSound(Sound.BUMP, bumpSound);
 soundEngine.loadSound(Sound.FLIP, flipSound);
 soundEngine.loadSound(Sound.FILL, fillSound);
-soundEngine.loadSound(Sound.INIT, initSound);
+soundEngine.loadSound(Sound.RESET, initSound);
+soundEngine.loadSound(Sound.SWITCH, switchSound);
+soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound);
 
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 
@@ -82,15 +90,14 @@ export const rotImage: HTMLImageElement = new Image();
 rotImage.src = rot;
 
 const all: Array<AbstractLevel> = [
-    new Level1(),
-    new Level2(),
-    new Level3(),
+    new Level1(), new Level2(), new Level3(),
     new Level4(),
     new Level5(),
     new Level6(),
-    new Level7()
+    new Level7(),
+    new Level8()
 ];
-let currentLev: number = 0;
+let currentLev: number = 7;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
@@ -110,6 +117,8 @@ function draw() {
 
     moveableObjects.forEach(x => x.draw(context, (Date.now() - lastTime) * 0.006));
 
+    // TODO: sort by y for proper overlapping
+    // all nimations, different characters
     players.forEach(player => player.draw(context, lastTime, kwirk));
 
     requestAnimationFrame(() => draw());
@@ -141,13 +150,16 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         level = lev2.getLevel();
         moveableObjects = lev2.getEnities();
         players = lev2.getStartPos();
-        SoundEngine.getInstance().play(Sound.INIT);
+        SoundEngine.getInstance().play(Sound.RESET);
     }
 
     if (event.key === 's') {
         const currentPlayer: Player = players[currentPlayerIndex];
         currentPlayer.setOldPosition(currentPlayer);
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+        const myNewPlyer = players[currentPlayerIndex];
+        myNewPlyer.switchTime = Date.now();
+        SoundEngine.getInstance().play(Sound.SWITCH);
     }
 
 });
@@ -199,13 +211,16 @@ function move(dx: number, dy: number): void {
                 currentPlayer.finished = true;
                 players = players.filter(player => player.finished === false);
                 currentPlayerIndex = players.indexOf(myNewPlayer);
+                myNewPlayer.switchTime = Date.now();
+                SoundEngine.getInstance().play(Sound.SWITCH);
+
             } else {
                 currentLev = (currentLev + 1) % all.length;
                 const lev2 = all[currentLev];
                 level = lev2.getLevel();
                 moveableObjects = lev2.getEnities();
                 players = lev2.getStartPos();
-                SoundEngine.getInstance().play(Sound.INIT);
+                SoundEngine.getInstance().play(Sound.NEXT_LEVEL);
             }
         }
         return;
