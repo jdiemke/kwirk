@@ -90,7 +90,7 @@ const all: Array<AbstractLevel> = [
     new Level6(),
     new Level7()
 ];
-let currentLev: number = 6;
+let currentLev: number = 0;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
