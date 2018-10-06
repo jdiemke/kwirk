@@ -107,8 +107,8 @@ export class PushableBlock implements IBlock {
     }
 
     public handleCollision(oldPlayer: Player,
-        newPlayer: Player, map: CollisionMap, level: Array<Array<number>>,
-        time: number): boolean {
+                           newPlayer: Player, map: CollisionMap, level: Array<Array<number>>,
+                           time: number): boolean {
 
         this.time = time;
         // collision case: check whether obstacle can be moved according to the players movement
