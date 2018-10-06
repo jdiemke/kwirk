@@ -38,8 +38,8 @@ export class Level4 extends AbstractLevel {
         return moveableObjects;
     }
 
-    public getStartPos(): Player {
-        return new Player(16, 8);
+    public getStartPos(): Array<Player> {
+        return [new Player(16, 8)];
     }
 
 }

@@ -75,8 +75,8 @@ export class RotatableBlock implements IBlock {
             context.drawImage(this.rotImage, 3 * 8, 0, 8, 8, (this.x) * 8, (this.y) * 8, 8, 8);
 
             context.drawImage(this.rotImage, 5 * 8, 0, 8, 8, (this.x) * 8, (this.y - 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
+            context.drawImage(this.rotImage, 7 * 8, 0, 8, 8, (this.x) * 8, (this.y + 1) * 8, 8, 8);
+            context.drawImage(this.rotImage, 6 * 8, 0, 8, 8, (this.x + 1) * 8, (this.y) * 8, 8, 8);
             context.drawImage(this.rotImage, 8 * 8, 0, 8, 8, (this.x - 1) * 8, (this.y) * 8, 8, 8);
         }
 
@@ -102,6 +102,8 @@ export class RotatableBlock implements IBlock {
     }
 
     public fill(map: CollisionMap): void {
+        map.set(this.x, this.y, 1);
+
         for (let i = 0; i < this.tiles.length; i++) {
             map.set(this.circle[this.tiles[i]].x + this.x, this.circle[this.tiles[i]].y + this.y, 1);
         }
@@ -115,7 +117,6 @@ export class RotatableBlock implements IBlock {
         const newDir: Vector2D = new Vector2D(newPlayer.getX() - this.x, newPlayer.getY() - this.y);
 
         const direction: RotationDirection = oldDir.determienRotationDirectionTo(newDir);
-        console.warn(RotationDirection[direction]);
 
         if (direction === RotationDirection.PARALLEL) {
             this.oldRotation = this.rotation;
@@ -128,6 +129,7 @@ export class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y)) {
+                        this.oldRotation = this.rotation;
                         SoundEngine.getInstance().play(Sound.BUMP);
                         return;
                     }
@@ -144,6 +146,7 @@ export class RotatableBlock implements IBlock {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
                     if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y)) {
+                        this.oldRotation = this.rotation;
                         SoundEngine.getInstance().play(Sound.BUMP);
                         return;
                     }

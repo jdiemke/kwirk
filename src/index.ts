@@ -1,5 +1,11 @@
 
 // import song from './assets/dalezy_-_tu_page.xm';
+/**
+ * TODO:
+ * - character animation for all directions
+ * - better keyboard support with fixed update rate
+ * - local storage for last level (also nice for tetris highscore)
+ */
 import song from './assets/keith303_-_tang.xm';
 
 import kwirkImage from './assets/kwirk.png';
@@ -23,6 +29,8 @@ import fillSound from './assets/sounds/fill.wav';
 import flipSound from './assets/sounds/flip.wav';
 import initSound from './assets/sounds/init.wav';
 import pushSound from './assets/sounds/push.wav';
+import { Level6 } from './levels/Level6';
+import { Level7 } from './levels/Level7';
 
 const soundEngine = SoundEngine.getInstance();
 soundEngine.playExtendedModule(song);
@@ -78,14 +86,16 @@ const all: Array<AbstractLevel> = [
     new Level2(),
     new Level3(),
     new Level4(),
-    new Level5()
+    new Level5(),
+    new Level6(),
+    new Level7()
 ];
 let currentLev: number = 0;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
-let player = lev.getStartPos();
-let oldPlayer: Player = lev.getStartPos();
+let players: Array<Player> = lev.getStartPos();
+let currentPlayerIndex: number = 0;
 
 function draw() {
     context.clearRect(0, 0, 20 * 8, 18 * 8);
@@ -100,18 +110,7 @@ function draw() {
 
     moveableObjects.forEach(x => x.draw(context, (Date.now() - lastTime) * 0.006));
 
-    const myPl: Player = oldPlayer.interpolate(player, (Date.now() - lastTime) * 0.006);
-    context.drawImage(
-        kwirk,
-        (Math.floor(Date.now() * 0.008) % 2) * 8,
-        0, 8, 16,
-        Math.floor(myPl.getX() * 8), Math.floor(myPl.getY() * 8 - 3), 8, 16);
-
-    context.font = '18px Arial';
-
-    if (level[player.getY()][player.getX()] === 10) {
-        context.fillText('You Won!', 10, 50);
-    }
+    players.forEach(player => player.draw(context, lastTime, kwirk));
 
     requestAnimationFrame(() => draw());
 }
@@ -138,12 +137,17 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 
     if (event.key === 'r') {
         lastTime = Date.now();
-        oldPlayer = new Player(player.getX(), player.getY());
         const lev2 = all[currentLev];
         level = lev2.getLevel();
         moveableObjects = lev2.getEnities();
-        player = lev2.getStartPos();
+        players = lev2.getStartPos();
         SoundEngine.getInstance().play(Sound.INIT);
+    }
+
+    if (event.key === 's') {
+        const currentPlayer: Player = players[currentPlayerIndex];
+        currentPlayer.setOldPosition(currentPlayer);
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     }
 
 });
@@ -151,8 +155,9 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 let lastTime = 0;
 function move(dx: number, dy: number): void {
     lastTime = Date.now();
-    oldPlayer = new Player(player.getX(), player.getY());
-    const newPlayer: Player = new Player(player.getX() + dx, player.getY() + dy);
+    const currentPlayer: Player = players[currentPlayerIndex];
+    currentPlayer.setOldPosition(currentPlayer);
+    const newPlayer: Player = new Player(currentPlayer.getX() + dx, currentPlayer.getY() + dy);
 
     const colMap: CollisionMap = new CollisionMap(level[0].length, level.length);
 
@@ -181,16 +186,27 @@ function move(dx: number, dy: number): void {
 
     // no collisiton
     if (collistion === undefined) {
-        player.setX(newPlayer.getX());
-        player.setY(newPlayer.getY());
+        currentPlayer.setX(newPlayer.getX());
+        currentPlayer.setY(newPlayer.getY());
 
-        if (level[player.getY()][player.getX()] === 10) {
-            currentLev = (currentLev + 1) % all.length;
-            const lev2 = all[currentLev];
-            level = lev2.getLevel();
-            moveableObjects = lev2.getEnities();
-            player = lev2.getStartPos();
-            SoundEngine.getInstance().play(Sound.INIT);
+        if (level[currentPlayer.getY()][currentPlayer.getX()] === 10) {
+            const activePlayers: Array<Player> = players.filter(player => player.finished === false);
+
+            // this could probably done a bit smarter! :)
+            if (activePlayers.length > 1) {
+                const index = activePlayers.indexOf(currentPlayer);
+                const myNewPlayer: Player = activePlayers[(index + 1) % activePlayers.length];
+                currentPlayer.finished = true;
+                players = players.filter(player => player.finished === false);
+                currentPlayerIndex = players.indexOf(myNewPlayer);
+            } else {
+                currentLev = (currentLev + 1) % all.length;
+                const lev2 = all[currentLev];
+                level = lev2.getLevel();
+                moveableObjects = lev2.getEnities();
+                players = lev2.getStartPos();
+                SoundEngine.getInstance().play(Sound.INIT);
+            }
         }
         return;
     }
@@ -204,7 +220,7 @@ function move(dx: number, dy: number): void {
         x.fill(colMap);
     });
 
-    const kill: boolean = collistion.handleCollision(player, newPlayer, colMap, level,  lastTime);
+    const kill: boolean = collistion.handleCollision(currentPlayer, newPlayer, colMap, level, lastTime);
 
     if (kill) {
         moveableObjects = other;
