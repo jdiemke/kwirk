@@ -5,6 +5,6 @@ export abstract class AbstractLevel {
 
     public abstract getLevel(): Array<Array<number>>;
     public abstract getEnities(): Array<IBlock>;
-    public abstract getStartPos(): Player;
+    public abstract getStartPos(): Array<Player>;
 
 }
