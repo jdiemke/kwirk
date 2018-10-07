@@ -1,10 +1,9 @@
-
-// import song from './assets/dalezy_-_tu_page.xm';
 /**
  * TODO:
- * - character animation for all directions
  * - better keyboard support with fixed update rate
  * - local storage for last level (also nice for tetris highscore)
+ * - Level Reference:
+ *   https://www.youtube.com/watch?v=Pit-9Obf53Q&t=195s
  */
 import song from './assets/keith303_-_tang.xm';
 
@@ -32,9 +31,13 @@ import nextLevelSound from './assets/sounds/next.wav';
 import pushSound from './assets/sounds/push.wav';
 import switchSound from './assets/sounds/switch.wav';
 
+import { Level10 } from './levels/Level10';
+import { Level11 } from './levels/Level11';
 import { Level6 } from './levels/Level6';
 import { Level7 } from './levels/Level7';
 import { Level8 } from './levels/Level8';
+import { Level9 } from './levels/Level9';
+
 import { PlayerDirection } from './PlayerDirection';
 
 const soundEngine = SoundEngine.getInstance();
@@ -85,7 +88,8 @@ rotImage.src = rot;
 const all: Array<AbstractLevel> = [
     new Level1(), new Level2(), new Level3(),
     new Level4(), new Level5(), new Level6(),
-    new Level7(), new Level8()
+    new Level7(), new Level8(), new Level9(),
+    new Level10(), new Level11()
 ];
 
 let currentLev: number = 0;
@@ -149,6 +153,7 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         level = lev2.getLevel();
         moveableObjects = lev2.getEnities();
         players = lev2.getStartPos();
+        currentPlayerIndex = 0;
         players[0].switchTime = Date.now();
         players[0].active = true;
         SoundEngine.getInstance().play(Sound.RESET);
