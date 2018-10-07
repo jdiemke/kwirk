@@ -72,6 +72,12 @@ export class PushableBlock implements IBlock {
                 }
                 context.drawImage(this.rotImage, index * 8, 0, 8, 8, x * 8, (y + yy) * 8, 8, 8);
             }
+        } else {
+            for (let yy: number = 0; yy < this.height; yy++) {
+                for (let xx: number = 0; xx < this.with; xx++) {
+                    context.drawImage(this.rotImage, 20 * 8, 0, 8, 8, (x + xx) * 8, (y + yy) * 8, 8, 8);
+                }
+            }
         }
 
     }
