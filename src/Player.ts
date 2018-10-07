@@ -1,13 +1,21 @@
+import { PlayerDirection } from './PlayerDirection';
+
 export class Player {
 
     public switchTime: number;
+    public active: boolean;
     public finished: boolean = false;
     private oldX: number;
     private oldY: number;
+    private dir: PlayerDirection = PlayerDirection.DOWN;
 
     constructor(private x: number, private y: number) {
         this.oldX = x;
         this.oldY = y;
+    }
+
+    public setDirection(dir: PlayerDirection): void {
+        this.dir = dir;
     }
 
     public draw(context: CanvasRenderingContext2D, lastTime: number, kwirk): void {
@@ -22,7 +30,7 @@ export class Player {
 
         context.drawImage(
             kwirk,
-            (Math.floor(Date.now() * 0.008) % 2) * 8,
+            ((this.active ? (Math.floor(Date.now() * 0.008) % 2) : 0) + this.dir * 2) * 8,
             0, 8, 16,
             Math.floor(myPl.getX() * 8), Math.floor(myPl.getY() * 8 - 3), 8, 16);
         context.globalAlpha = 1;

@@ -35,6 +35,7 @@ import switchSound from './assets/sounds/switch.wav';
 import { Level6 } from './levels/Level6';
 import { Level7 } from './levels/Level7';
 import { Level8 } from './levels/Level8';
+import { PlayerDirection } from './PlayerDirection';
 
 const soundEngine = SoundEngine.getInstance();
 soundEngine.playExtendedModule(song);
@@ -48,14 +49,6 @@ export enum Sound {
     SWITCH = 'switch',
     NEXT_LEVEL = 'next'
 }
-
-soundEngine.loadSound(Sound.PUSH, pushSound);
-soundEngine.loadSound(Sound.BUMP, bumpSound);
-soundEngine.loadSound(Sound.FLIP, flipSound);
-soundEngine.loadSound(Sound.FILL, fillSound);
-soundEngine.loadSound(Sound.RESET, initSound);
-soundEngine.loadSound(Sound.SWITCH, switchSound);
-soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound);
 
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 
@@ -91,17 +84,16 @@ rotImage.src = rot;
 
 const all: Array<AbstractLevel> = [
     new Level1(), new Level2(), new Level3(),
-    new Level4(),
-    new Level5(),
-    new Level6(),
-    new Level7(),
-    new Level8()
+    new Level4(), new Level5(), new Level6(),
+    new Level7(), new Level8()
 ];
+
 let currentLev: number = 0;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
 let players: Array<Player> = lev.getStartPos();
+
 let currentPlayerIndex: number = 0;
 
 function draw() {
@@ -117,30 +109,37 @@ function draw() {
 
     moveableObjects.forEach(x => x.draw(context, (Date.now() - lastTime) * 0.006));
 
-    // TODO: sort by y for proper overlapping
     // all nimations, different characters
-    players.forEach(player => player.draw(context, lastTime, kwirk));
+    drawCharactersProperlyOrdered(players);
 
     requestAnimationFrame(() => draw());
 }
 
-requestAnimationFrame(() => draw());
+function drawCharactersProperlyOrdered(unsortedPlayers: Array<Player>): void {
+    unsortedPlayers.slice()
+        .sort((a, b) => a.getY() - b.getY())
+        .forEach(player => player.draw(context, lastTime, kwirk));
+}
 
 document.addEventListener('keydown', (event: KeyboardEvent) => {
 
     if (event.keyCode === 37) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.LEFT);
         move(-1, 0);
     }
 
     if (event.keyCode === 39) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.RIGHT);
         move(1, 0);
     }
 
     if (event.keyCode === 38) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.TOP);
         move(0, -1);
     }
 
     if (event.keyCode === 40) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.DOWN);
         move(0, 1);
     }
 
@@ -150,6 +149,8 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         level = lev2.getLevel();
         moveableObjects = lev2.getEnities();
         players = lev2.getStartPos();
+        players[0].switchTime = Date.now();
+        players[0].active = true;
         SoundEngine.getInstance().play(Sound.RESET);
     }
 
@@ -159,6 +160,10 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const myNewPlyer = players[currentPlayerIndex];
         myNewPlyer.switchTime = Date.now();
+
+        currentPlayer.active = false;
+        myNewPlyer.active = true;
+
         SoundEngine.getInstance().play(Sound.SWITCH);
     }
 
@@ -186,6 +191,10 @@ function move(dx: number, dy: number): void {
         }
     }
 
+    const copy = players.slice();
+    copy.splice(currentPlayerIndex, 1);
+    copy.forEach(player => colMap.set(player.getX(), player.getY(), 1));
+
     if (colMap.get(newPlayer.getX(), newPlayer.getY()) > 0) {
         // if the potential position is not walkable return
         SoundEngine.getInstance().play(Sound.BUMP);
@@ -212,6 +221,8 @@ function move(dx: number, dy: number): void {
                 players = players.filter(player => player.finished === false);
                 currentPlayerIndex = players.indexOf(myNewPlayer);
                 myNewPlayer.switchTime = Date.now();
+                myNewPlayer.active = true;
+                currentPlayer.active = false;
                 SoundEngine.getInstance().play(Sound.SWITCH);
 
             } else {
@@ -220,7 +231,11 @@ function move(dx: number, dy: number): void {
                 level = lev2.getLevel();
                 moveableObjects = lev2.getEnities();
                 players = lev2.getStartPos();
-                SoundEngine.getInstance().play(Sound.NEXT_LEVEL);
+                currentPlayerIndex = 0;
+                players.forEach(x => x.setDirection(PlayerDirection.DOWN));
+                players[0].switchTime = Date.now();
+                players[0].active = true;
+                SoundEngine.getInstance().play(Sound.SWITCH);
             }
         }
         return;
@@ -242,3 +257,20 @@ function move(dx: number, dy: number): void {
     }
 
 }
+
+Promise.all([
+    soundEngine.loadSound(Sound.PUSH, pushSound),
+    soundEngine.loadSound(Sound.BUMP, bumpSound),
+    soundEngine.loadSound(Sound.FLIP, flipSound),
+    soundEngine.loadSound(Sound.FILL, fillSound),
+    soundEngine.loadSound(Sound.RESET, initSound),
+    soundEngine.loadSound(Sound.SWITCH, switchSound),
+    soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound)
+]).then(() => {
+
+    players[0].switchTime = Date.now();
+    players[0].active = true;
+    SoundEngine.getInstance().play(Sound.SWITCH);
+
+    requestAnimationFrame(() => draw());
+});
