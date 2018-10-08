@@ -98,6 +98,10 @@ let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
 let players: Array<Player> = lev.getStartPos();
 
+if ('vibrate' in window.navigator) {
+    window.navigator.vibrate(100);
+}
+
 let currentPlayerIndex: number = 0;
 
 function draw() {
