@@ -264,22 +264,17 @@ function move(dx: number, dy: number): void {
     }
 
 }
-setTimeout(() => {
-    Promise.all([
-        soundEngine.loadSound(Sound.PUSH, pushSound),
-        soundEngine.loadSound(Sound.BUMP, bumpSound),
-        soundEngine.loadSound(Sound.FLIP, flipSound),
-        soundEngine.loadSound(Sound.FILL, fillSound),
-        soundEngine.loadSound(Sound.RESET, initSound),
-        soundEngine.loadSound(Sound.SWITCH, switchSound),
-        soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound)
-    ]).then(() => {
 
-        players[0].switchTime = Date.now();
-        players[0].active = true;
-        SoundEngine.getInstance().play(Sound.SWITCH);
+soundEngine.loadSound(Sound.PUSH, pushSound);
+soundEngine.loadSound(Sound.BUMP, bumpSound);
+soundEngine.loadSound(Sound.FLIP, flipSound);
+soundEngine.loadSound(Sound.FILL, fillSound);
+soundEngine.loadSound(Sound.RESET, initSound);
+soundEngine.loadSound(Sound.SWITCH, switchSound);
+soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound);
 
-        requestAnimationFrame(() => draw());
-    });
+players[0].switchTime = Date.now();
+players[0].active = true;
+SoundEngine.getInstance().play(Sound.SWITCH);
 
-}, 2000);
+requestAnimationFrame(() => draw());
