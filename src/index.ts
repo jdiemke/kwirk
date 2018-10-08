@@ -74,8 +74,6 @@ document.body.appendChild(canvas);
 
 const context: CanvasRenderingContext2D = canvas.getContext('2d');
 
-context.fillRect(0, 0, 256, 224);
-
 const tiles: HTMLImageElement = new Image();
 tiles.src = tileImage;
 
@@ -266,20 +264,22 @@ function move(dx: number, dy: number): void {
     }
 
 }
+setTimeout(() => {
+    Promise.all([
+        soundEngine.loadSound(Sound.PUSH, pushSound),
+        soundEngine.loadSound(Sound.BUMP, bumpSound),
+        soundEngine.loadSound(Sound.FLIP, flipSound),
+        soundEngine.loadSound(Sound.FILL, fillSound),
+        soundEngine.loadSound(Sound.RESET, initSound),
+        soundEngine.loadSound(Sound.SWITCH, switchSound),
+        soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound)
+    ]).then(() => {
 
-Promise.all([
-    soundEngine.loadSound(Sound.PUSH, pushSound),
-    soundEngine.loadSound(Sound.BUMP, bumpSound),
-    soundEngine.loadSound(Sound.FLIP, flipSound),
-    soundEngine.loadSound(Sound.FILL, fillSound),
-    soundEngine.loadSound(Sound.RESET, initSound),
-    soundEngine.loadSound(Sound.SWITCH, switchSound),
-    soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound)
-]).then(() => {
+        players[0].switchTime = Date.now();
+        players[0].active = true;
+        SoundEngine.getInstance().play(Sound.SWITCH);
 
-    players[0].switchTime = Date.now();
-    players[0].active = true;
-    SoundEngine.getInstance().play(Sound.SWITCH);
+        requestAnimationFrame(() => draw());
+    });
 
-    requestAnimationFrame(() => draw());
-});
+}, 2000);
