@@ -151,7 +151,7 @@ function draw() {
 
     }
 
-    if (Date.now() - elapsed > 500) {
+    if (Date.now() - elapsed > 166) {
         if (touch) {
             const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
             console.log(JSON.stringify(dir));
@@ -237,11 +237,17 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 
 });
 
-canvas.onclick = toggleFullScreen;
+document.onclick = toggleFullScreen;
 
 function toggleFullScreen() {
-    (<any> canvas).webkitRequestFullscreen();
-    canvas.requestFullscreen();
+    if ((<any> canvas).webkitRequestFullscreen) {
+        (<any> canvas).webkitRequestFullscreen();
+    }
+    if (canvas.requestFullscreen) {
+        canvas.requestFullscreen();
+    }
+
+    requestAnimationFrame(() => draw());
 }
 
 document.addEventListener('touchstart', handleStart, false);
@@ -388,5 +394,3 @@ soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound);
 players[0].switchTime = Date.now();
 players[0].active = true;
 SoundEngine.getInstance().play(Sound.SWITCH);
-
-requestAnimationFrame(() => draw());
