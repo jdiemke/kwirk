@@ -10,6 +10,10 @@ export class Vector2D {
         return new Vector2D(this.x - vector.x, this.y - vector.y);
     }
 
+    public dot(vector: Vector2D): number {
+        return this.x * vector.x + this.y * vector.y;
+    }
+
     /**
      * https://math.stackexchange.com/questions/74307/two-2d-vector-angle-clockwise-predicate
      *
