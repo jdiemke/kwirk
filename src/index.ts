@@ -144,37 +144,44 @@ function draw() {
     context.setTransform(1, 0, 0, 1, 0, 0);
 
     if (touch) {
+        context.strokeStyle = 'rgba(100,255.0,200,0.78)';
         context.beginPath();
-        context.fillStyle = '#FFaaaa';
-        context.arc(pos.x, pos.y, 4, 0, 2 * Math.PI, false);  // a circle at the start
 
-        context.fill();
+        context.lineWidth = 6;
+        context.arc(pos.x, pos.y, 20, 0, 2 * Math.PI, false);  // a circle at the start
+        context.stroke();
+        context.beginPath();
+        context.lineWidth = 2;
+        context.arc(pos.x, pos.y, 35, 0, 2 * Math.PI, false);  // a circle at the start
+
+        context.stroke();
 
         context.beginPath();
-        context.fillStyle = '#aaFFaa';
-        context.arc(end.x, end.y, 4, 0, 2 * Math.PI, false);  // a circle at the start
+        context.lineWidth = 2;
+        context.strokeStyle = 'rgba(100,255.0,200,0.78)';
+        context.arc(end.x, end.y, 25, 0, 2 * Math.PI, false);  // a circle at the start
 
-        context.fill();
+        context.stroke();
 
     }
 
-    if (Date.now() - elapsed > 166) {
+    if (Date.now() - elapsed > 566) {
         if (touch) {
             const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
             console.log(JSON.stringify(dir));
-            if (dir.x > 20) {
+
+            const dist1 = new Vector2D(1, 0).dot(dir);
+            const dist2 = new Vector2D(-1, 0).dot(dir);
+            const dist3 = new Vector2D(0, 1).dot(dir);
+            const dist4 = new Vector2D(0, -1).dot(dir);
+
+            if (dist1 > dist2 && dist1 > dist3 && dist1 > dist4) {
                 move(1, 0);
-            }
-
-            if (dir.x < -20) {
+            } else if (dist2 > dist1 && dist2 > dist3 && dist2 > dist4) {
                 move(-1, 0);
-            }
-
-            if (dir.y > 20) {
+            } else if (dist3 > dist2 && dist3 > dist1 && dist3 > dist4) {
                 move(0, 1);
-            }
-
-            if (dir.y < -20) {
+            } else {
                 move(0, -1);
             }
         }
