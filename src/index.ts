@@ -57,9 +57,6 @@ export enum Sound {
 const canvas: HTMLCanvasElement = document.createElement('canvas');
 const screenCanvas: HTMLCanvasElement = document.createElement('canvas');
 
-canvas.width = screen.width;
-canvas.height = screen.height;
-
 canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: -moz-crisp-edges;' + // FireFox
     'image-rendering: -o-crisp-edges;' +  // Opera
@@ -70,6 +67,14 @@ canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
 document.body.appendChild(canvas);
+
+window.addEventListener('resize', resizeCanvas, false);
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
 
 const context: CanvasRenderingContext2D = canvas.getContext('2d');
 context.imageSmoothingEnabled = false;
@@ -247,7 +252,6 @@ function toggleFullScreen() {
         canvas.requestFullscreen();
     }
 
-    requestAnimationFrame(() => draw());
 }
 
 document.addEventListener('touchstart', handleStart, false);
@@ -394,3 +398,5 @@ soundEngine.loadSound(Sound.NEXT_LEVEL, nextLevelSound);
 players[0].switchTime = Date.now();
 players[0].active = true;
 SoundEngine.getInstance().play(Sound.SWITCH);
+
+requestAnimationFrame(() => draw());
