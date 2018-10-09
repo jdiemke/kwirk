@@ -70,14 +70,16 @@ document.body.appendChild(canvas);
 
 window.addEventListener('resize', resizeCanvas, false);
 
+const context: CanvasRenderingContext2D = canvas.getContext('2d');
+context.imageSmoothingEnabled = false;
+
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    context.imageSmoothingEnabled = false;
 }
 resizeCanvas();
 
-const context: CanvasRenderingContext2D = canvas.getContext('2d');
-context.imageSmoothingEnabled = false;
 const tiles: HTMLImageElement = new Image();
 tiles.src = tileImage;
 
