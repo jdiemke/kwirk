@@ -242,16 +242,23 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
 
 });
 
-document.onclick = toggleFullScreen;
+canvas.onclick = toggleFullScreen;
 
 function toggleFullScreen() {
-    if ((<any> canvas).webkitRequestFullscreen) {
-        (<any> canvas).webkitRequestFullscreen();
-    }
-    if (canvas.requestFullscreen) {
-        canvas.requestFullscreen();
-    }
+    launchIntoFullscreen(document.documentElement);
 
+}
+
+function launchIntoFullscreen(element) {
+    if (element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+    }
 }
 
 document.addEventListener('touchstart', handleStart, false);
