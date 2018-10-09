@@ -1,8 +1,13 @@
 import { RotationDirection } from './blocks/RotationDirection';
 
 export class Vector2D {
+
     constructor(public x: number, public y: number) {
 
+    }
+
+    public sub(vector: Vector2D): Vector2D {
+        return new Vector2D(this.x - vector.x, this.y - vector.y);
     }
 
     /**

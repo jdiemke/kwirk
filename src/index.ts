@@ -39,6 +39,7 @@ import { Level8 } from './levels/Level8';
 import { Level9 } from './levels/Level9';
 
 import { PlayerDirection } from './PlayerDirection';
+import { Vector2D } from './Vector2D';
 
 const soundEngine = SoundEngine.getInstance();
 soundEngine.playExtendedModule(song);
@@ -54,9 +55,10 @@ export enum Sound {
 }
 
 const canvas: HTMLCanvasElement = document.createElement('canvas');
+const screenCanvas: HTMLCanvasElement = document.createElement('canvas');
 
-canvas.width = 20 * 8;
-canvas.height = 18 * 8;
+canvas.width = screen.width;
+canvas.height = screen.height;
 
 canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: -moz-crisp-edges;' + // FireFox
@@ -67,13 +69,13 @@ canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: pixelated; ' + // Future browsers
     '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-canvas.style.width = `${canvas.width * 2}px`;
-canvas.style.height = `${canvas.height * 2}px`;
+//canvas.style.width = `${100}%`;
+//canvas.style.height = `${100}%`;
 
 document.body.appendChild(canvas);
 
 const context: CanvasRenderingContext2D = canvas.getContext('2d');
-
+context.imageSmoothingEnabled = false;
 const tiles: HTMLImageElement = new Image();
 tiles.src = tileImage;
 
@@ -101,10 +103,27 @@ if ('vibrate' in window.navigator) {
 }
 
 let currentPlayerIndex: number = 0;
-
+let elapsed: number = Date.now();
 function draw() {
-    context.clearRect(0, 0, 20 * 8, 18 * 8);
+    const aspectGame: number = (20 * 8) / (18 * 8);
+    const aspectCanvas: number = canvas.width / canvas.height;
+    let scale;
 
+    if (aspectCanvas < aspectGame) {
+        const newWidth = canvas.width * 1 / aspectGame;
+        scale = newWidth / (18 * 8);
+    } else {
+        const newWidth = canvas.height * aspectGame;
+        scale = newWidth / (20 * 8);
+    }
+
+    context.fillStyle = '#000000';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.scale(scale, scale);
+    context.translate(-Math.floor((20 * 8) / 2), -Math.floor(18 * 8) / 2);
+    context.fillStyle = '#aaaaaa';
+    context.fillRect(0, 0, 20 * 8, 18 * 8);
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
             if (level[y][x] !== 8) {
@@ -117,6 +136,46 @@ function draw() {
 
     // all nimations, different characters
     drawCharactersProperlyOrdered(players);
+
+    context.setTransform(1, 0, 0, 1, 0, 0);
+
+    if (touch) {
+        context.beginPath();
+        context.fillStyle = '#FFaaaa';
+        context.arc(pos.x, pos.y, 4, 0, 2 * Math.PI, false);  // a circle at the start
+
+        context.fill();
+
+        context.beginPath();
+        context.fillStyle = '#aaFFaa';
+        context.arc(end.x, end.y, 4, 0, 2 * Math.PI, false);  // a circle at the start
+
+        context.fill();
+
+    }
+
+    if (Date.now() - elapsed > 500) {
+        if (touch) {
+            const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
+            console.log(JSON.stringify(dir));
+            if (dir.x > 20) {
+                move(1, 0);
+            }
+
+            if (dir.x < -20) {
+                move(-1, 0);
+            }
+
+            if (dir.y > 20) {
+                move(0, 1);
+            }
+
+            if (dir.y < -20) {
+                move(0, -1);
+            }
+        }
+        elapsed = Date.now();
+    }
 
     requestAnimationFrame(() => draw());
 }
@@ -174,7 +233,64 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
         SoundEngine.getInstance().play(Sound.SWITCH);
     }
 
+    if (event.key === 'f') {
+        toggleFullScreen();
+
+    }
+
 });
+
+canvas.onclick = toggleFullScreen;
+
+function toggleFullScreen() {
+    (<any> canvas).webkitRequestFullscreen();
+    canvas.requestFullscreen();
+}
+
+document.addEventListener('touchstart', handleStart, false);
+document.addEventListener('touchmove', handleMove, false);
+document.addEventListener('touchend', handleEnd, false);
+
+const pos = {
+    x: 0,
+    y: 0
+};
+
+const end = {
+    x: 0,
+    y: 0
+};
+
+function handleEnd(evt) {
+
+    touch = false;
+}
+
+function handleMove(evt) {
+    evt.preventDefault();
+    touch = true;
+    const touches = evt.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+
+        end.x = touches[i].pageX;
+        end.y = touches[i].pageY;
+    }
+}
+let touch: boolean = false;
+function handleStart(evt) {
+
+    evt.preventDefault();
+
+
+    const touches = evt.changedTouches;
+
+    for (let i = 0; i < touches.length; i++) {
+
+        pos.x = touches[i].pageX;
+        pos.y = touches[i].pageY;
+    }
+}
 
 let lastTime = 0;
 function move(dx: number, dy: number): void {
