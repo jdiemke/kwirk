@@ -69,9 +69,6 @@ canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: pixelated; ' + // Future browsers
     '-ms-interpolation-mode: nearest-neighbor;'; // IE
 
-//canvas.style.width = `${100}%`;
-//canvas.style.height = `${100}%`;
-
 document.body.appendChild(canvas);
 
 const context: CanvasRenderingContext2D = canvas.getContext('2d');
@@ -281,7 +278,6 @@ let touch: boolean = false;
 function handleStart(evt) {
 
     evt.preventDefault();
-
 
     const touches = evt.changedTouches;
 
