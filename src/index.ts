@@ -107,7 +107,6 @@ if ('vibrate' in window.navigator) {
 }
 
 let currentPlayerIndex: number = 0;
-let elapsed: number = Date.now();
 function draw() {
     const aspectGame: number = (20 * 8) / (18 * 8);
     const aspectCanvas: number = canvas.width / canvas.height;
@@ -143,49 +142,38 @@ function draw() {
 
     context.setTransform(1, 0, 0, 1, 0, 0);
 
+    context.strokeStyle = 'rgba(100,255.0,200,0.78)';
+
+    context.beginPath();
+    context.lineWidth = 6;
+    context.arc(35 + 10, 35 + 10, 35, 0, 2 * Math.PI, false);  // a circle at the start
+    context.stroke();
+
+    context.beginPath();
+    context.lineWidth = 6;
+    context.arc(35 + 10 + 35 * 2 + 10 * 2, 35 + 10, 35, 0, 2 * Math.PI, false);  // a circle at the start
+    context.stroke();
+
     if (touch) {
         context.strokeStyle = 'rgba(100,255.0,200,0.78)';
         context.beginPath();
 
         context.lineWidth = 6;
-        context.arc(pos.x, pos.y, 20, 0, 2 * Math.PI, false);  // a circle at the start
+        context.arc(pos.x, pos.y, 35, 0, 2 * Math.PI, false);  // a circle at the start
         context.stroke();
         context.beginPath();
         context.lineWidth = 2;
-        context.arc(pos.x, pos.y, 35, 0, 2 * Math.PI, false);  // a circle at the start
+        context.arc(pos.x, pos.y, 45, 0, 2 * Math.PI, false);  // a circle at the start
 
         context.stroke();
 
         context.beginPath();
         context.lineWidth = 2;
         context.strokeStyle = 'rgba(100,255.0,200,0.78)';
-        context.arc(end.x, end.y, 25, 0, 2 * Math.PI, false);  // a circle at the start
+        context.arc(end.x, end.y, 35, 0, 2 * Math.PI, false);  // a circle at the start
 
         context.stroke();
 
-    }
-
-    if (Date.now() - elapsed > 566) {
-        if (touch) {
-            const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
-            console.log(JSON.stringify(dir));
-
-            const dist1 = new Vector2D(1, 0).dot(dir);
-            const dist2 = new Vector2D(-1, 0).dot(dir);
-            const dist3 = new Vector2D(0, 1).dot(dir);
-            const dist4 = new Vector2D(0, -1).dot(dir);
-
-            if (dist1 > dist2 && dist1 > dist3 && dist1 > dist4) {
-                move(1, 0);
-            } else if (dist2 > dist1 && dist2 > dist3 && dist2 > dist4) {
-                move(-1, 0);
-            } else if (dist3 > dist2 && dist3 > dist1 && dist3 > dist4) {
-                move(0, 1);
-            } else {
-                move(0, -1);
-            }
-        }
-        elapsed = Date.now();
     }
 
     requestAnimationFrame(() => draw());
@@ -232,16 +220,7 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
     }
 
     if (event.key === 's') {
-        const currentPlayer: Player = players[currentPlayerIndex];
-        currentPlayer.setOldPosition(currentPlayer);
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-        const myNewPlyer = players[currentPlayerIndex];
-        myNewPlyer.switchTime = Date.now();
-
-        currentPlayer.active = false;
-        myNewPlyer.active = true;
-
-        SoundEngine.getInstance().play(Sound.SWITCH);
+        mySwi();
     }
 
     if (event.key === 'f') {
@@ -250,6 +229,19 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
     }
 
 });
+
+function mySwi() {
+    const currentPlayer: Player = players[currentPlayerIndex];
+    currentPlayer.setOldPosition(currentPlayer);
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    const myNewPlyer = players[currentPlayerIndex];
+    myNewPlyer.switchTime = Date.now();
+
+    currentPlayer.active = false;
+    myNewPlyer.active = true;
+
+    SoundEngine.getInstance().play(Sound.SWITCH);
+}
 
 canvas.onclick = toggleFullScreen;
 
@@ -286,12 +278,33 @@ const end = {
 
 function handleEnd(evt) {
 
+    if (!touch) {
+        return;
+    }
+    const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
+    console.log(JSON.stringify(dir));
+
+    const dist1 = new Vector2D(1, 0).dot(dir);
+    const dist2 = new Vector2D(-1, 0).dot(dir);
+    const dist3 = new Vector2D(0, 1).dot(dir);
+    const dist4 = new Vector2D(0, -1).dot(dir);
+
+    if (dist1 > dist2 && dist1 > dist3 && dist1 > dist4) {
+        move(1, 0);
+    } else if (dist2 > dist1 && dist2 > dist3 && dist2 > dist4) {
+        move(-1, 0);
+    } else if (dist3 > dist2 && dist3 > dist1 && dist3 > dist4) {
+        move(0, 1);
+    } else {
+        move(0, -1);
+    }
+
     touch = false;
 }
 
 function handleMove(evt) {
     evt.preventDefault();
-    touch = true;
+
     const touches = evt.changedTouches;
 
     for (let i = 0; i < touches.length; i++) {
@@ -307,11 +320,20 @@ function handleStart(evt) {
 
     const touches = evt.changedTouches;
 
-    for (let i = 0; i < touches.length; i++) {
+    const center = new Vector2D(35 + 10, 35 + 10);
+    const myPos = new Vector2D(touches[0].pageX, touches[0].pageY);
 
-        pos.x = touches[i].pageX;
-        pos.y = touches[i].pageY;
+    if (myPos.sub(center).length() < 35) {
+        console.log('switch');
+        mySwi();
+    } else {
+        touch = true;
+        pos.x = touches[0].pageX;
+        pos.y = touches[0].pageY;
+        end.x = touches[0].pageX;
+        end.y = touches[0].pageY;
     }
+
 }
 
 let lastTime = 0;
