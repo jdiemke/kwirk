@@ -208,15 +208,7 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
     }
 
     if (event.key === 'r') {
-        lastTime = Date.now();
-        const lev2 = all[currentLev];
-        level = lev2.getLevel();
-        moveableObjects = lev2.getEnities();
-        players = lev2.getStartPos();
-        currentPlayerIndex = 0;
-        players[0].switchTime = Date.now();
-        players[0].active = true;
-        SoundEngine.getInstance().play(Sound.RESET);
+        reset();
     }
 
     if (event.key === 's') {
@@ -229,6 +221,18 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
     }
 
 });
+
+function reset() {
+    lastTime = Date.now();
+    const lev2 = all[currentLev];
+    level = lev2.getLevel();
+    moveableObjects = lev2.getEnities();
+    players = lev2.getStartPos();
+    currentPlayerIndex = 0;
+    players[0].switchTime = Date.now();
+    players[0].active = true;
+    SoundEngine.getInstance().play(Sound.RESET);
+}
 
 function mySwi() {
     const currentPlayer: Player = players[currentPlayerIndex];
@@ -281,8 +285,12 @@ function handleEnd(evt) {
     if (!touch) {
         return;
     }
+    touch = false;
     const dir: Vector2D = new Vector2D(end.x, end.y).sub(new Vector2D(pos.x, pos.y));
-    console.log(JSON.stringify(dir));
+
+    if (dir.length() < 5) {
+        return;
+    }
 
     const dist1 = new Vector2D(1, 0).dot(dir);
     const dist2 = new Vector2D(-1, 0).dot(dir);
@@ -298,8 +306,6 @@ function handleEnd(evt) {
     } else {
         move(0, -1);
     }
-
-    touch = false;
 }
 
 function handleMove(evt) {
@@ -307,11 +313,8 @@ function handleMove(evt) {
 
     const touches = evt.changedTouches;
 
-    for (let i = 0; i < touches.length; i++) {
-
-        end.x = touches[i].pageX;
-        end.y = touches[i].pageY;
-    }
+    end.x = touches[0].pageX;
+    end.y = touches[0].pageY;
 }
 let touch: boolean = false;
 function handleStart(evt) {
@@ -322,10 +325,12 @@ function handleStart(evt) {
 
     const center = new Vector2D(35 + 10, 35 + 10);
     const myPos = new Vector2D(touches[0].pageX, touches[0].pageY);
+    const center2 = new Vector2D(35 + 10 + 35 * 2 + 10 * 2, 35 + 10);
 
     if (myPos.sub(center).length() < 35) {
-        console.log('switch');
         mySwi();
+    } else if (myPos.sub(center2).length() < 35) {
+        reset();
     } else {
         touch = true;
         pos.x = touches[0].pageX;
