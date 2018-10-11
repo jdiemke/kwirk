@@ -96,7 +96,8 @@ const all: Array<AbstractLevel> = [
     new Level10(), new Level11(), new Level12()
 ];
 
-let currentLev: number = 0;
+let currentLev: number = localStorage.currentLevel ?
+    Math.max(Math.min(Number(localStorage.currentLevel), all.length - 1), 0) : 0;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
@@ -298,12 +299,16 @@ function handleEnd(evt) {
     const dist4 = new Vector2D(0, -1).dot(dir);
 
     if (dist1 > dist2 && dist1 > dist3 && dist1 > dist4) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.RIGHT);
         move(1, 0);
     } else if (dist2 > dist1 && dist2 > dist3 && dist2 > dist4) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.LEFT);
         move(-1, 0);
     } else if (dist3 > dist2 && dist3 > dist1 && dist3 > dist4) {
+        players[currentPlayerIndex].setDirection(PlayerDirection.DOWN);
         move(0, 1);
     } else {
+        players[currentPlayerIndex].setDirection(PlayerDirection.TOP);
         move(0, -1);
     }
 }
@@ -399,6 +404,7 @@ function move(dx: number, dy: number): void {
 
             } else {
                 currentLev = (currentLev + 1) % all.length;
+                localStorage.currentLevel = currentLev;
                 const lev2 = all[currentLev];
                 level = lev2.getLevel();
                 moveableObjects = lev2.getEnities();
