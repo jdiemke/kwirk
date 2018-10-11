@@ -38,6 +38,7 @@ import { Level7 } from './levels/Level7';
 import { Level8 } from './levels/Level8';
 import { Level9 } from './levels/Level9';
 
+import { Level12 } from './levels/Level12';
 import { PlayerDirection } from './PlayerDirection';
 import { Vector2D } from './Vector2D';
 
@@ -55,7 +56,6 @@ export enum Sound {
 }
 
 const canvas: HTMLCanvasElement = document.createElement('canvas');
-const screenCanvas: HTMLCanvasElement = document.createElement('canvas');
 
 canvas.style.cssText = 'image-rendering: optimizeSpeed;' + // FireFox < 6.0
     'image-rendering: -moz-crisp-edges;' + // FireFox
@@ -93,7 +93,7 @@ const all: Array<AbstractLevel> = [
     new Level1(), new Level2(), new Level3(),
     new Level4(), new Level5(), new Level6(),
     new Level7(), new Level8(), new Level9(),
-    new Level10(), new Level11()
+    new Level10(), new Level11(), new Level12()
 ];
 
 let currentLev: number = 0;
@@ -125,7 +125,7 @@ function draw() {
     context.translate(canvas.width / 2, canvas.height / 2);
     context.scale(scale, scale);
     context.translate(-Math.floor((20 * 8) / 2), -Math.floor(18 * 8) / 2);
-    context.fillStyle = '#aaaaaa';
+    context.fillStyle = '#eeeeee';
     context.fillRect(0, 0, 20 * 8, 18 * 8);
     for (let y: number = 0; y < level.length; y++) {
         for (let x: number = 0; x < level[y].length; x++) {
