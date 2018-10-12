@@ -7,7 +7,7 @@ import { IBlock } from './IBlock';
 export class PushableBlock implements IBlock {
     public x: number;
     public y: number;
-    private with: number;
+    private width: number;
     private height: number;
 
     private time: number = 0;
@@ -19,7 +19,7 @@ export class PushableBlock implements IBlock {
         this.y = y;
         this.oldX = x;
         this.oldY = y;
-        this.with = width;
+        this.width = width;
         this.height = height;
     }
 
@@ -35,56 +35,70 @@ export class PushableBlock implements IBlock {
         return (b - a) * val + a;
     }
 
-    // TODO: fix drawing code
+    public draw1x1Block(context, x: number, y: number): void {
+        context.drawImage(this.rotImage, 17 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
+    }
+
+    public draw1xNBlock(context, x: number, y: number, tiles: Array<number> = [19, 21, 20]): void {
+        for (let yy: number = 0; yy < this.height; yy++) {
+            let index: number;
+            if (yy === 0) {
+                index = tiles[0];
+            } else if (yy === (this.height - 1)) {
+                index = tiles[2];
+            } else {
+                index = tiles[1];
+            }
+            context.drawImage(this.rotImage, index * 8, 0, 8, 8, x * 8, (y + yy) * 8, 8, 8);
+        }
+    }
+
+    public drawNxNBlock(context, x: number, y: number): void {
+        for (let yy: number = 0; yy < this.height; yy++) {
+            if (yy === 0) {
+                this.drawNx1Block(context, x, y + yy, [9, 24, 10]);
+            } else if (yy === (this.height - 1)) {
+                this.drawNx1Block(context, x, y + yy, [11, 23, 12]);
+            } else {
+                this.drawNx1Block(context, x, y + yy, [15, 25, 16]);
+            }
+        }
+    }
+
+    public drawNx1Block(context, x: number, y: number, tiles: Array<number> = [13, 22, 14]): void {
+        for (let xx: number = 0; xx < this.width; xx++) {
+            let index: number;
+            if (xx === 0) {
+                index = tiles[0];
+            } else if (xx === (this.width - 1)) {
+                index = tiles[2];
+            } else {
+                index = tiles[1];
+            }
+            context.drawImage(this.rotImage, index * 8, 0, 8, 8, (x + xx) * 8, (y) * 8, 8, 8);
+        }
+    }
+
     public draw(context): void {
         const k: number = Math.max(0, Math.min((Date.now() - this.time) * 0.006, 1));
+
         const x: number = this.inter(this.oldX, this.x, k);
         const y: number = this.inter(this.oldY, this.y, k);
 
-        if (this.with === 1 && this.height === 1) {
-            context.drawImage(this.rotImage, 17 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-
-        } else if (this.with === 2 && this.height === 2) {
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
-        } else if (this.with === 2 && this.height === 3) {
-            context.drawImage(this.rotImage, 9 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 10 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 15 * 8, 0, 8, 8, (x) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 16 * 8, 0, 8, 8, (x + 1) * 8, (y + 1) * 8, 8, 8);
-            context.drawImage(this.rotImage, 11 * 8, 0, 8, 8, (x) * 8, (y + 2) * 8, 8, 8);
-            context.drawImage(this.rotImage, 12 * 8, 0, 8, 8, (x + 1) * 8, (y + 2) * 8, 8, 8);
-        } else if (this.with === 2 && this.height === 1) {
-            context.drawImage(this.rotImage, 13 * 8, 0, 8, 8, (x) * 8, (y) * 8, 8, 8);
-            context.drawImage(this.rotImage, 14 * 8, 0, 8, 8, (x + 1) * 8, (y) * 8, 8, 8);
-        } else if (this.with === 1) {
-            // 19, 20, 21
-            for (let yy: number = 0; yy < this.height; yy++) {
-                let index: number;
-                if (yy === 0) {
-                    index = 19;
-                } else if (yy === (this.height - 1)) {
-                    index = 20;
-                } else {
-                    index = 21;
-                }
-                context.drawImage(this.rotImage, index * 8, 0, 8, 8, x * 8, (y + yy) * 8, 8, 8);
-            }
+        if (this.width === 1 && this.height === 1) {
+            this.draw1x1Block(context, x, y);
+        } else if (this.width === 1) {
+            this.draw1xNBlock(context, x, y);
+        } else if (this.height === 1) {
+            this.drawNx1Block(context, x, y);
         } else {
-            for (let yy: number = 0; yy < this.height; yy++) {
-                for (let xx: number = 0; xx < this.with; xx++) {
-                    context.drawImage(this.rotImage, 20 * 8, 0, 8, 8, (x + xx) * 8, (y + yy) * 8, 8, 8);
-                }
-            }
+            this.drawNxNBlock(context, x, y);
         }
-
     }
 
     public collides(xx: number, yy: number): boolean {
         for (let y: number = 0; y < this.height; y++) {
-            for (let x: number = 0; x < this.with; x++) {
+            for (let x: number = 0; x < this.width; x++) {
                 if ((this.x + x) === xx && (this.y + y) === yy) {
                     return true;
                 }
@@ -95,7 +109,7 @@ export class PushableBlock implements IBlock {
 
     public isMovable(xx: number, yy: number, col: CollisionMap) {
         for (let y: number = 0; y < this.height; y++) {
-            for (let x: number = 0; x < this.with; x++) {
+            for (let x: number = 0; x < this.width; x++) {
                 if (col.get(this.x + x + xx, this.y + y + yy) === 1) {
                     return false;
                 }
@@ -106,7 +120,7 @@ export class PushableBlock implements IBlock {
 
     public fill(map: CollisionMap): void {
         for (let y: number = 0; y < this.height; y++) {
-            for (let x: number = 0; x < this.with; x++) {
+            for (let x: number = 0; x < this.width; x++) {
                 map.set((this.x + x), (this.y + y), 1);
             }
         }
@@ -133,7 +147,7 @@ export class PushableBlock implements IBlock {
             // TODO: check whether collistion has to be converted into floor tiles
             if (this.onEmptySpace(map)) {
                 for (let y: number = 0; y < this.height; y++) {
-                    for (let x: number = 0; x < this.with; x++) {
+                    for (let x: number = 0; x < this.width; x++) {
                         level[y + this.y][x + this.x] = 8;
                     }
                 }
@@ -153,7 +167,7 @@ export class PushableBlock implements IBlock {
 
     public onEmptySpace(map: CollisionMap): boolean {
         for (let y: number = 0; y < this.height; y++) {
-            for (let x: number = 0; x < this.with; x++) {
+            for (let x: number = 0; x < this.width; x++) {
                 if (map.get((this.x + x), (this.y + y)) === 0) {
                     return false;
                 }
