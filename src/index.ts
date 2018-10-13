@@ -38,9 +38,12 @@ import { Level7 } from './levels/Level7';
 import { Level8 } from './levels/Level8';
 import { Level9 } from './levels/Level9';
 
+import { Keyboard } from './controller/Keyboard';
 import { Level12 } from './levels/Level12';
 import { PlayerDirection } from './PlayerDirection';
 import { Vector2D } from './Vector2D';
+
+const keyboard: Keyboard = new Keyboard();
 
 const soundEngine = SoundEngine.getInstance();
 soundEngine.playExtendedModule(song);
@@ -176,8 +179,6 @@ function draw() {
         context.stroke();
 
     }
-
-    requestAnimationFrame(() => draw());
 }
 
 function drawCharactersProperlyOrdered(unsortedPlayers: Array<Player>): void {
@@ -185,43 +186,6 @@ function drawCharactersProperlyOrdered(unsortedPlayers: Array<Player>): void {
         .sort((a, b) => a.getY() - b.getY())
         .forEach(player => player.draw(context, lastTime, kwirk));
 }
-
-document.addEventListener('keydown', (event: KeyboardEvent) => {
-
-    if (event.keyCode === 37) {
-        players[currentPlayerIndex].setDirection(PlayerDirection.LEFT);
-        move(-1, 0);
-    }
-
-    if (event.keyCode === 39) {
-        players[currentPlayerIndex].setDirection(PlayerDirection.RIGHT);
-        move(1, 0);
-    }
-
-    if (event.keyCode === 38) {
-        players[currentPlayerIndex].setDirection(PlayerDirection.TOP);
-        move(0, -1);
-    }
-
-    if (event.keyCode === 40) {
-        players[currentPlayerIndex].setDirection(PlayerDirection.DOWN);
-        move(0, 1);
-    }
-
-    if (event.key === 'r') {
-        reset();
-    }
-
-    if (event.key === 's') {
-        mySwi();
-    }
-
-    if (event.key === 'f') {
-        toggleFullScreen();
-
-    }
-
-});
 
 function reset() {
     lastTime = Date.now();
@@ -448,4 +412,88 @@ players[0].switchTime = Date.now();
 players[0].active = true;
 SoundEngine.getInstance().play(Sound.SWITCH);
 
-requestAnimationFrame(() => draw());
+requestAnimationFrame(() => run());
+
+function run() {
+    update();
+    draw();
+    requestAnimationFrame(() => run());
+}
+
+let lastEventTime: number = null;
+let keyPressed: boolean = false;
+document.addEventListener('keydown', (event: KeyboardEvent) => {
+
+    if (keyPressed === true) {
+        return;
+    }
+
+    if (Date.now() - lastEventTime < 166) {
+        keyPressed = true;
+        return;
+    }
+
+    if (event.keyCode === 37) {
+        keyPressed = true;
+        lastEventTime = Date.now();
+        players[currentPlayerIndex].setDirection(PlayerDirection.LEFT);
+        move(-1, 0);
+    } else if (event.keyCode === 39) {
+        keyPressed = true;
+        lastEventTime = Date.now();
+        players[currentPlayerIndex].setDirection(PlayerDirection.RIGHT);
+        move(1, 0);
+    } else if (event.keyCode === 38) {
+        keyPressed = true;
+        lastEventTime = Date.now();
+        players[currentPlayerIndex].setDirection(PlayerDirection.TOP);
+        move(0, -1);
+    } else if (event.keyCode === 40) {
+        keyPressed = true;
+        lastEventTime = Date.now();
+        players[currentPlayerIndex].setDirection(PlayerDirection.DOWN);
+        move(0, 1);
+    }
+
+    if (event.key === 'r') {
+        reset();
+    }
+
+    if (event.key === 's') {
+        mySwi();
+    }
+
+    if (event.key === 'f') {
+        toggleFullScreen();
+    }
+
+});
+
+document.addEventListener('keyup', (event: KeyboardEvent) => {
+    keyPressed = false;
+});
+
+function update() {
+
+    if (!keyPressed) {
+        return;
+    }
+
+    if (Date.now() - lastEventTime > 166) {
+        if (keyboard.isDown(Keyboard.LEFT)) {
+            players[currentPlayerIndex].setDirection(PlayerDirection.LEFT);
+            move(-1, 0);
+        } else if (keyboard.isDown(Keyboard.RIGHT)) {
+            players[currentPlayerIndex].setDirection(PlayerDirection.RIGHT);
+            move(1, 0);
+        } else if (keyboard.isDown(Keyboard.UP)) {
+            players[currentPlayerIndex].setDirection(PlayerDirection.TOP);
+            move(0, -1);
+        } else if (keyboard.isDown(Keyboard.DOWN)) {
+            players[currentPlayerIndex].setDirection(PlayerDirection.DOWN);
+            move(0, 1);
+        }
+
+        lastEventTime = Date.now();
+    }
+}
