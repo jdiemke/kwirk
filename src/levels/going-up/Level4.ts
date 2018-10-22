@@ -1,8 +1,8 @@
-import { IBlock } from '../blocks/IBlock';
-import { PushableBlock } from '../blocks/PushableBlock';
-import { rotImage } from '../index';
-import { Player } from '../Player';
-import { AbstractLevel } from './AbstractLevel';
+import { IBlock } from '../../blocks/IBlock';
+import { PushableBlock } from '../../blocks/PushableBlock';
+import { rotImage } from '../../index';
+import { Player } from '../../Player';
+import { AbstractLevel } from '../AbstractLevel';
 
 export class Level4 extends AbstractLevel {
 

@@ -1,9 +1,9 @@
-import { IBlock } from '../blocks/IBlock';
-import { RotatableBlock } from '../blocks/RotateableBlock';
-import { RotateableBlockType } from '../blocks/RotateableBlockType';
-import { rotImage } from '../index';
-import { Player } from '../Player';
-import { AbstractLevel } from './AbstractLevel';
+import { IBlock } from '../../blocks/IBlock';
+import { RotatableBlock } from '../../blocks/RotateableBlock';
+import { RotateableBlockType } from '../../blocks/RotateableBlockType';
+import { rotImage } from '../../index';
+import { Player } from '../../Player';
+import { AbstractLevel } from '../AbstractLevel';
 
 export class Level1 extends AbstractLevel {
 

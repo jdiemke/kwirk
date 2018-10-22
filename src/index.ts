@@ -3,7 +3,10 @@
  * - better keyboard support with fixed update rate
  * - local storage for last level (also nice for tetris highscore)
  * - Level Reference:
- *   https://www.youtube.com/watch?v=Pit-9Obf53Q&t=195s
+ *   https://www.youtube.com/watch?v=Pit-9Obf53Q
+ *   https://www.youtube.com/watch?v=9hSy0scFqL8
+ *   https://youtu.be/gJ9TkVNzBWQ
+ *   https://www.youtube.com/watch?v=6gU1QnELinE
  */
 import song from './assets/keith303_-_tang.xm';
 
@@ -14,11 +17,11 @@ import rot from './assets/rotating.png';
 import { IBlock } from './blocks/IBlock';
 import { CollisionMap } from './CollisionMap';
 import { AbstractLevel } from './levels/AbstractLevel';
-import { Level1 } from './levels/Level1';
-import { Level2 } from './levels/Level2';
-import { Level3 } from './levels/Level3';
-import { Level4 } from './levels/Level4';
-import { Level5 } from './levels/Level5';
+import { Level1 } from './levels/going-up/Level1';
+import { Level2 } from './levels/going-up/Level2';
+import { Level3 } from './levels/going-up/Level3';
+import { Level4 } from './levels/going-up/Level4';
+import { Level5 } from './levels/going-up/Level5';
 import { Player } from './Player';
 
 import { SoundEngine } from './SoundEngine';
@@ -31,17 +34,22 @@ import nextLevelSound from './assets/sounds/next.wav';
 import pushSound from './assets/sounds/push.wav';
 import switchSound from './assets/sounds/switch.wav';
 
-import { Level10 } from './levels/Level10';
-import { Level11 } from './levels/Level11';
-import { Level6 } from './levels/Level6';
-import { Level7 } from './levels/Level7';
-import { Level8 } from './levels/Level8';
-import { Level9 } from './levels/Level9';
+import { Level10 } from './levels/going-up/Level10';
+import { Level11 } from './levels/going-up/Level11';
+import { Level6 } from './levels/going-up/Level6';
+import { Level7 } from './levels/going-up/Level7';
+import { Level8 } from './levels/going-up/Level8';
+import { Level9 } from './levels/going-up/Level9';
 
 import { Keyboard } from './controller/Keyboard';
-import { Level12 } from './levels/Level12';
+import { Floor01 } from './levels/amazing-tater/puzzle-mode/level-01/Floor01';
+import { Level12 } from './levels/going-up/Level12';
 import { PlayerDirection } from './PlayerDirection';
 import { Vector2D } from './Vector2D';
+import { Floor02 } from './levels/amazing-tater/puzzle-mode/level-01/Floor02';
+import { Floor03 } from './levels/amazing-tater/puzzle-mode/level-01/Floor03';
+import { Floor04 } from './levels/amazing-tater/puzzle-mode/level-01/Floor04';
+import { Floor05 } from './levels/amazing-tater/puzzle-mode/level-01/Floor05';
 
 const keyboard: Keyboard = new Keyboard();
 
@@ -93,14 +101,18 @@ export const rotImage: HTMLImageElement = new Image();
 rotImage.src = rot;
 
 const all: Array<AbstractLevel> = [
+    new Floor01(), new Floor02(), new Floor03(),
+    new Floor04(), new Floor05(),
+
     new Level1(), new Level2(), new Level3(),
     new Level4(), new Level5(), new Level6(),
     new Level7(), new Level8(), new Level9(),
     new Level10(), new Level11(), new Level12()
 ];
 
+const defaultStartLevel: number = 0;
 let currentLev: number = localStorage.currentLevel ?
-    Math.max(Math.min(Number(localStorage.currentLevel), all.length - 1), 0) : 0;
+    Math.max(Math.min(Number(localStorage.currentLevel), all.length - 1), 0) : defaultStartLevel;
 const lev: AbstractLevel = all[currentLev];
 let level = lev.getLevel();
 let moveableObjects = lev.getEnities();
