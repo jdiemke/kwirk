@@ -43,13 +43,13 @@ import { Level9 } from './levels/going-up/Level9';
 
 import { Keyboard } from './controller/Keyboard';
 import { Floor01 } from './levels/amazing-tater/puzzle-mode/level-01/Floor01';
-import { Level12 } from './levels/going-up/Level12';
-import { PlayerDirection } from './PlayerDirection';
-import { Vector2D } from './Vector2D';
 import { Floor02 } from './levels/amazing-tater/puzzle-mode/level-01/Floor02';
 import { Floor03 } from './levels/amazing-tater/puzzle-mode/level-01/Floor03';
 import { Floor04 } from './levels/amazing-tater/puzzle-mode/level-01/Floor04';
 import { Floor05 } from './levels/amazing-tater/puzzle-mode/level-01/Floor05';
+import { Level12 } from './levels/going-up/Level12';
+import { PlayerDirection } from './PlayerDirection';
+import { Vector2D } from './Vector2D';
 
 const keyboard: Keyboard = new Keyboard();
 
