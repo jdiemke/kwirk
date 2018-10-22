@@ -1,10 +1,12 @@
-import { IBlock } from '../blocks/IBlock';
-import { PushableBlock } from '../blocks/PushableBlock';
-import { rotImage } from '../index';
-import { Player } from '../Player';
-import { AbstractLevel } from './AbstractLevel';
+import { IBlock } from '../../../../blocks/IBlock';
+import { PushableBlock } from '../../../../blocks/PushableBlock';
+import { RotatableBlock } from '../../../../blocks/RotateableBlock';
+import { RotateableBlockType } from '../../../../blocks/RotateableBlockType';
+import { rotImage } from '../../../../index';
+import { Player } from '../../../../Player';
+import { AbstractLevel } from '../../../AbstractLevel';
 
-export class Level2 extends AbstractLevel {
+export class Floor05 extends AbstractLevel {
 
     public getLevel(): Array<Array<number>> {
         const level: Array<Array<number>> = [
@@ -14,10 +16,10 @@ export class Level2 extends AbstractLevel {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0],
-            [0, 0, 3, 8, 8, 8, 4, 8, 8, 8, 8, 8, 8, 4, 8, 8, 8, 2, 0, 0],
-            [0, 0, 3, 8, 10, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 2, 0, 0],
-            [0, 0, 3, 8, 11, 8, 5, 8, 8, 8, 8, 8, 8, 5, 8, 8, 8, 2, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0],
+            [0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 8, 8, 12, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 8, 8, 8, 8, 8, 8, 8, 12, 8, 8, 12, 10, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -33,15 +35,16 @@ export class Level2 extends AbstractLevel {
     public getEnities(): Array<IBlock> {
 
         const moveableObjects: Array<IBlock> = [
-            new PushableBlock(9, 7, 2, 1, rotImage),
-            new PushableBlock(9, 8, 2, 1, rotImage),
-            new PushableBlock(9, 9, 2, 1, rotImage),
+            new PushableBlock(5, 8, 1, 1, rotImage),
+            new PushableBlock(7, 8, 1, 1, rotImage),
+            new RotatableBlock(10, 8, 3, rotImage, RotateableBlockType.DOUBLE_ORTHOGONAL),
+            new RotatableBlock(12, 8, 2, rotImage, RotateableBlockType.TRIPLE),
         ];
         return moveableObjects;
     }
 
     public getStartPos(): Array<Player> {
-        return [new Player(15, 8)];
+        return [new Player(15, 7)];
     }
 
 }

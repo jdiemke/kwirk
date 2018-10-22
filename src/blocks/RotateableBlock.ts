@@ -128,7 +128,7 @@ export class RotatableBlock implements IBlock {
             for (let i = 0; i < this.tiles.length; i++) {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
-                    if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y)) {
+                    if (map.get(this.circle[(this.tiles[i] + off) % 8].x + this.x, this.circle[(this.tiles[i] + off) % 8].y + this.y) === 1) {
                         this.oldRotation = this.rotation;
                         SoundEngine.getInstance().play(Sound.BUMP);
                         return;
@@ -145,7 +145,7 @@ export class RotatableBlock implements IBlock {
             for (let i = 0; i < this.tiles.length; i++) {
                 for (let off = 1; off <= 2; off++) {
                     // tslint:disable-next-line:max-line-length
-                    if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y)) {
+                    if (map.get(this.circle[(this.tiles[i] - off + 8) % 8].x + this.x, this.circle[(this.tiles[i] - off + 8) % 8].y + this.y) === 1) {
                         this.oldRotation = this.rotation;
                         SoundEngine.getInstance().play(Sound.BUMP);
                         return;
