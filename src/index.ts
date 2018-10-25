@@ -47,6 +47,11 @@ import { Floor02 } from './levels/amazing-tater/puzzle-mode/level-01/Floor02';
 import { Floor03 } from './levels/amazing-tater/puzzle-mode/level-01/Floor03';
 import { Floor04 } from './levels/amazing-tater/puzzle-mode/level-01/Floor04';
 import { Floor05 } from './levels/amazing-tater/puzzle-mode/level-01/Floor05';
+import { Floor06 } from './levels/amazing-tater/puzzle-mode/level-01/Floor06';
+import { Floor07 } from './levels/amazing-tater/puzzle-mode/level-01/Floor07';
+import { Floor08 } from './levels/amazing-tater/puzzle-mode/level-01/Floor08';
+import { Floor09 } from './levels/amazing-tater/puzzle-mode/level-01/Floor09';
+import { Floor10 } from './levels/amazing-tater/puzzle-mode/level-01/Floor10';
 import { Level12 } from './levels/going-up/Level12';
 import { PlayerDirection } from './PlayerDirection';
 import { Vector2D } from './Vector2D';
@@ -102,7 +107,9 @@ rotImage.src = rot;
 
 const all: Array<AbstractLevel> = [
     new Floor01(), new Floor02(), new Floor03(),
-    new Floor04(), new Floor05(),
+    new Floor04(), new Floor05(), new Floor06(),
+    new Floor07(), new Floor08(), new Floor09(),
+    new Floor10(),
 
     new Level1(), new Level2(), new Level3(),
     new Level4(), new Level5(), new Level6(),
