@@ -56,6 +56,8 @@ import { Level12 } from './levels/going-up/Level12';
 import { PlayerDirection } from './PlayerDirection';
 import { Vector2D } from './Vector2D';
 
+import { Floor01 as Level02Floor01 } from './levels/amazing-tater/puzzle-mode/level-02/Floor01';
+
 const keyboard: Keyboard = new Keyboard();
 
 const soundEngine = SoundEngine.getInstance();
@@ -109,7 +111,7 @@ const all: Array<AbstractLevel> = [
     new Floor01(), new Floor02(), new Floor03(),
     new Floor04(), new Floor05(), new Floor06(),
     new Floor07(), new Floor08(), new Floor09(),
-    new Floor10(),
+    new Floor10(), new Level02Floor01(),
 
     new Level1(), new Level2(), new Level3(),
     new Level4(), new Level5(), new Level6(),
@@ -235,7 +237,6 @@ canvas.onclick = toggleFullScreen;
 
 function toggleFullScreen() {
     launchIntoFullscreen(document.documentElement);
-
 }
 
 function launchIntoFullscreen(element) {

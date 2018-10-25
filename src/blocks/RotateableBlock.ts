@@ -118,6 +118,8 @@ export class RotatableBlock implements IBlock {
 
         const direction: RotationDirection = oldDir.determienRotationDirectionTo(newDir);
 
+        const oldTiles = this.tiles;
+
         if (direction === RotationDirection.PARALLEL) {
             this.oldRotation = this.rotation;
             SoundEngine.getInstance().play(Sound.BUMP);
@@ -161,13 +163,25 @@ export class RotatableBlock implements IBlock {
         if (this.collides(newPlayer.getX(), newPlayer.getY())) {
             const dx: number = newPlayer.getX() - oldPlayer.getX();
             const dy: number = newPlayer.getY() - oldPlayer.getY();
+
             newPlayer.setX(newPlayer.getX() + dx);
             newPlayer.setY(newPlayer.getY() + dy);
         }
-        oldPlayer.setX(newPlayer.getX());
-        oldPlayer.setY(newPlayer.getY());
 
-        SoundEngine.getInstance().play(Sound.FLIP);
+        // if new player position is not walkable we have to reset the movement
+        // of the player and the rotation block!
+        if (map.get(newPlayer.getX(), newPlayer.getY()) > 0) {
+            this.rotation = this.oldRotation;
+            this.tiles = oldTiles;
+
+            SoundEngine.getInstance().play(Sound.BUMP);
+        } else {
+            oldPlayer.setX(newPlayer.getX());
+            oldPlayer.setY(newPlayer.getY());
+
+            SoundEngine.getInstance().play(Sound.FLIP);
+        }
+
         return false;
     }
 
