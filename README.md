@@ -1,4 +1,5 @@
 # kwirk
+![Build Status](https://github.com/jdiemke/kwirk/actions/workflows/gh-pages.yml/badge.svg)
 
 A Puzzle Boy clone written in HTML5 and TypesScript.
 
