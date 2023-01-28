@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack-cli",
-    "serve": "webpack-dev-server --no-inline --open",
-    "lint": "tslint -c tslint.json 'src/**/*.ts'"
+    "serve": "webpack-dev-server --no-inline --open"
   },
   "repository": {
     "type": "git",
