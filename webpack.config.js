@@ -6,7 +6,7 @@ module.exports = {
     mode: 'development',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, './build')
+        path: path.resolve(__dirname, './dist')
     },
     resolve: {
         extensions: ['.ts', '.js']
@@ -14,12 +14,12 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.(ts|js)$/,
+                test: /\.ts$/,
                 use: 'ts-loader'
             },
             {
                 test: /\.(png|jpg|mp3|ogg|xm|wav)$/,
-                use: 'file-loader'
+                type: 'asset/resource'
             }
         ]
     },

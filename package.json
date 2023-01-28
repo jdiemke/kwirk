@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack-cli",
-    "serve": "webpack-dev-server --no-inline --open"
+    "serve": "webpack-dev-server --open"
   },
   "repository": {
     "type": "git",
@@ -19,14 +19,12 @@
   },
   "homepage": "https://github.com/jdiemke/kwirk#readme",
   "dependencies": {
-    "file-loader": "3.0.1",
-    "html-webpack-plugin": "3.2.0",
-    "ts-loader": "5.3.3",
-    "tslint": "5.12.0",
-    "typescript": "3.2.2",
-    "webpack": "4.28.3",
-    "webpack-cli": "3.2.1",
-    "webpack-dev-server": "3.1.14",
+    "html-webpack-plugin": "5.5.0",
+    "ts-loader": "9.4.2",
+    "typescript": "4.9.4",
+    "webpack": "5.75.0",
+    "webpack-cli": "5.0.1",
+    "webpack-dev-server": "4.11.1",
     "jsxm": "1.0.1"
   }
 }
